@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="generator" content="Hugo 0.121.2">
+
+    
+
+    
+
+    
+        
+            <meta
+                name="description"
+                content="Adventures in netcode, game engines, and game development" />
+        
+
+        
+            <meta
+                name="keywords"
+                content="netcode,programming,gamedev,c&#43;&#43;,unreal,UE5,unity,games,sockets" />
+        
+
+        
+            <meta
+                name="author"
+                content="Joe Best-Rotheray" />
+        
+
+    
+
+
+    <title>
+        
+            Making a Multiplayer FPS in C&#43;&#43; Part 4: Rebuilding The Client in C&#43;&#43; |
+            
+        
+    </title>
+
+    
+
+
+    
+    
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+    
+
+
+    
+    
+        
+            
+            
+        
+    
+
+    
+
+    
+
+        
+        
+
+
+        
+        
+
+
+        <link
+            rel="stylesheet"
+            href="/css/index_b09f3b5.min.981b5487040e8fce2ff189ee791909f986edaaa96533f9897e9d4d1098f144164fedf5c696cd286fd09c8ad2d28103cfb60098771aa1d69f6a896abe6a57329c.css"
+            integrity="sha512-mBtUhwQOj84v8YnueRkJ&#43;YbtqqllM/mJfp1NEJjxRBZP7fXGls0ob9CcitLSgQPPtgCYdxqh1p9qiWq&#43;alcynA==" />
+    
+
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+</head>
+
+
+
+    <body>
+        <header class="header">
+    <div class="header_left">
+        
+    </div>
+
+    <div class="header_middle">
+        
+            Making a Multiplayer FPS in C&#43;&#43; Part 4: Rebuilding The Client in C&#43;&#43; -
+            
+        
+    </div>
+</header>
+
+
+
+        <main>
+            <aside class="sidebar">
+    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li
+                    
+                        class="dir opened-dir"
+                    >
+                    <span class="dir-text"> Making a Multiplayer FPS in C&#43;&#43; </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part8/" title="./multiplayer-fps/part8/">
+                         Part 8: Client-Side Prediction Revisited 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part7/" title="./multiplayer-fps/part7/">
+                         Part 7: The Vulkan Projection Matrix 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part6/" title="./multiplayer-fps/part6/">
+                         Part 6: Cleanup 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part5/" title="./multiplayer-fps/part5/">
+                         Part 5: Client-Side Prediction 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part4/" title="./multiplayer-fps/part4/">
+                         Part 4: Rebuilding The Client in C&#43;&#43; 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part3/" title="./multiplayer-fps/part3/">
+                         Part 3: Multiple Players 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part2/" title="./multiplayer-fps/part2/">
+                         Part 2: The Main Loop 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part1/" title="./multiplayer-fps/part1/">
+                         Part 1: Hello Multiplayer World 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+            
+                <li
+                    
+                        class="dir closed-dir"
+                    >
+                    <span class="dir-text"> Posts </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/unity-client-side-prediction/" title="./posts/unity-client-side-prediction/">
+                         Client-Side Prediction With Physics In Unity 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/ditching-the-mutex/" title="./posts/ditching-the-mutex/">
+                         Ditching the Mutex 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+    </ul>
+
+
+</aside>
+<aside class="exapandable"></aside>
+
+
+            
+    <article class="main">
+        <button
+    class="sidebar-toggle-btn"
+    type="menu"
+    aria-expanded="false"
+    aria-haspopup="true">
+    <i class="bi bi-list"></i>
+</button>
+
+
+        
+            <div class="headerLogo">
+                <a href="https://codersblock.org/"><img src="https://codersblock.org/images/logo.png"/></a>
+            </div>
+        
+        <div class="title">
+            <h1 class="title-header">
+                Making a Multiplayer FPS in C&#43;&#43; Part 4: Rebuilding The Client in C&#43;&#43;
+            </h1>
+
+            <div class="author-date-readtime">
+                
+
+                    
+                        <div class="author" title="Author">
+                            <i class="bi bi-person"></i>
+                            <a
+                                href="/author/joe-best-rotheray/"
+                                class="cat-btn">
+                                Joe Best-Rotheray
+                            </a>
+                        </div>
+                    
+
+                
+
+                
+                    <div class="date" title="Date">
+                        <i class="bi bi-calendar3"></i>
+                        <time
+                            datetime="2017.07.03"
+                            >2017.07.03
+                        </time>
+                    </div>
+                
+
+                
+                    <div
+                        class="readtime"
+                        title="Time to Read">
+                        <i class="bi bi-clock"></i>
+                        10 mins to read
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="article-meta">
+            
+
+            
+
+            
+                <div class="breadcumb">
+                    <i class="bi bi-folder"></i>
+                    
+    
+    
+
+
+
+
+<a href="https://codersblock.org/" class="bread-btn">
+    
+        <i class="bi bi-house-fill"></i>
+    
+
+    
+        Home
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/multiplayer-fps/" class="bread-btn">
+    
+
+    
+        Making a Multiplayer FPS in C&#43;&#43;
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/multiplayer-fps/part4/" class="bread-btn">
+    
+
+    
+        Part 4: Rebuilding The Client in C&#43;&#43;
+    
+</a>
+
+                </div>
+            
+
+            
+        </div>
+
+        
+            
+
+        
+
+
+        <div class="content">
+            
+                <p>In the previous part of this series we had an outline of an online game with a fixed tick rate, and support for multiple clients to connect and move around. In this part we bin the horrible client made in Unity, and implement one in C++. You can browse the repository at this stage of development <a href="https://github.com/spectre1989/odin/tree/8395cc31bb211a39b2c9553c2728b3c8f06f7934">here</a>.</p>
+<p>The reason I want to rebuild the client in C++ is that for upcoming work on client-side prediction, we&rsquo;ll need the server and client to have a certain amount of shared code. It&rsquo;s possible to re-implement this shared code in C# for the client, but it would be easier to maintain if we just had one codebase written in C++. Plus I just prefer doing stuff in C++, so there.</p>
+<p>Unlike the server, the client will need to show visual stuff, which means it&rsquo;ll need to be a windowed application. I&rsquo;m not a fan of making things by plumbing together a bunch of frameworks, and opening a window is actually deceptively simple. I won&rsquo;t go in to details here, there are plenty of guides out there for opening a window, I recommend the <a href="https://hero.handmade.network/episode/code/day001">first few days</a> of Casey Muratori&rsquo;s Handmade Hero series.</p>
+<p>The other thing we&rsquo;ll need for &lsquo;visual stuff&rsquo; is a way of getting our &lsquo;stuff&rsquo; on screen. I&rsquo;m intending for this to be a 3D game of some sort, so we&rsquo;ll need a way of displaying 3D graphics. Again, there are a lot of frameworks out there, but I have yet to find one I really like. So I&rsquo;ll be using Vulkan, a relatively new low-overhead, cross-platform (my main reason for choosing it over DirectX 12) graphics API. The code for this lives in client_graphics.cpp, I won&rsquo;t go in to detail about this (it&rsquo;s not really the point of this series), if you want to learn about Vulkan then I&rsquo;d recommend looking at some of <a href="https://github.com/KhronosGroup/Khronosdotorg/blob/master/api/vulkan/resources.md">these learning resources</a>.</p>
+<p>So, I&rsquo;ll start from client.cpp line 105, this is where the windows set up stuff ends. We start with initialising the state we need for graphics. For the Unity client, each player was represented by a capsule, for this new client each player is represented by a rectangle (no actual 3D yet, that&rsquo;s a job for future Joe). For now I&rsquo;ve implemented this with a single vertex buffer with 4 vertices per player to form each rectangle, each frame the vertices are updated and drawn.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="n">uint32</span> <span class="n">c_num_vertices</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">c_max_clients</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Graphics</span><span class="o">::</span><span class="n">Vertex</span> <span class="n">vertices</span><span class="p">[</span><span class="n">c_num_vertices</span><span class="p">];</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>We have our array of vertices, we know the maximum vertices we&rsquo;ll need is the maximum number of clients multiplied by 4.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="struct%20Vertex%0a%7b%0a%20%20%20float32%20pos_x;%0a%20%20%20float32%20pos_y;%0a%20%20%20float32%20col_r;%0a%20%20%20float32%20col_g;%0a%20%20%20float32%20col_b;%0a%7d;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Vertex</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">pos_x</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">pos_y</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">col_r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">col_g</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">col_b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The Graphics::Vertex struct is defined in client_graphics.cpp. Moving on in client.cpp:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="srand%28%28unsigned%20int%29time%280%29%29;%0afor%20%28uint32%20i%20=%200;%20i%20%3c%20c_max_clients;%20&#43;&#43;i%29%0a%7b%0a%20%20%20//%20generate%20colour%20for%20client%0a%20%20%20float32%20r%20=%200.0f;%0a%20%20%20float32%20g%20=%200.0f;%0a%20%20%20float32%20b%20=%200.0f;%0a%0a%20%20%20float32%20temp%20=%20%28float32%29%28rand%28%29%20%25%20100%29%20/%20100.0f;%0a%0a%20%20%20switch%20%28rand%28%29%20%25%206%29%0a%20%20%20%7b%0a%20%20%20%20%20%20case%200:%0a%20%20%20%20%20%20%20%20%20r%20=%201.0f;%0a%20%20%20%20%20%20%20%20%20g%20=%20temp;%0a%20%20%20%20%20%20break;%0a%0a%20%20%20%20%20%20case%201:%0a%20%20%20%20%20%20%20%20%20r%20=%20temp;%0a%20%20%20%20%20%20%20%20%20g%20=%201.0f;%0a%20%20%20%20%20%20break;%0a%0a%20%20%20%20%20%20case%202:%0a%20%20%20%20%20%20%20%20%20g%20=%201.0f;%0a%20%20%20%20%20%20%20%20%20b%20=%20temp;%0a%20%20%20%20%20%20break;%0a%0a%20%20%20%20%20%20case%203:%0a%20%20%20%20%20%20%20%20%20g%20=%20temp;%0a%20%20%20%20%20%20%20%20%20b%20=%201.0f;%0a%20%20%20%20%20%20break;%0a%0a%20%20%20%20%20%20case%204:%0a%20%20%20%20%20%20%20%20%20r%20=%201.0f;%0a%20%20%20%20%20%20%20%20%20b%20=%20temp;%0a%20%20%20%20%20%20break;%0a%0a%20%20%20%20%20%20case%205:%0a%20%20%20%20%20%20%20%20%20r%20=%20temp;%0a%20%20%20%20%20%20%20%20%20b%20=%201.0f;%0a%20%20%20%20%20%20break;%0a%20%20%20%7d%0a%0a%20%20%20//%20assign%20colour%20to%20all%204%20verts,%20and%20zero%20positions%20to%20begin%20with%0a%20%20%20uint32%20start_verts%20=%20i%20*%204;%0a%20%20%20for%20%28uint32%20j%20=%200;%20j%20%3c%204;%20&#43;&#43;j%29%0a%20%20%20%7b%0a%20%20%20%20%20%20vertices[start_verts%20&#43;%20j].pos_x%20=%200.0f;%0a%20%20%20%20%20%20vertices[start_verts%20&#43;%20j].pos_y%20=%200.0f;%0a%20%20%20%20%20%20vertices[start_verts%20&#43;%20j].col_r%20=%20r;%0a%20%20%20%20%20%20vertices[start_verts%20&#43;%20j].col_g%20=%20g;%0a%20%20%20%20%20%20vertices[start_verts%20&#43;%20j].col_b%20=%20b;%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">srand</span><span class="p">((</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span><span class="n">time</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="n">uint32</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">c_max_clients</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// generate colour for client
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">float32</span> <span class="n">r</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">g</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">float32</span><span class="p">)(</span><span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">switch</span> <span class="p">(</span><span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="mi">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">r</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">g</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">r</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">g</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">g</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">b</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">g</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">b</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">r</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">b</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">5</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">r</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">b</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// assign colour to all 4 verts, and zero positions to begin with
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">uint32</span> <span class="n">start_verts</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="p">(</span><span class="n">uint32</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">start_verts</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">pos_x</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">start_verts</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">pos_y</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">start_verts</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">col_r</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">start_verts</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">col_g</span> <span class="o">=</span> <span class="n">g</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">start_verts</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">col_b</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>For each player we generate a random fully saturated colour, it looks a bit ugly, a proper HSV implementation would make it a lot cleaner. The colour is applied to all 4 of the players verts, and all verts will have position (0, 0) if there is no player to show.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="constexpr%20uint32%20c_num_indices%20=%206%20*%20c_max_clients;%0auint16%20indices[c_num_indices];%0a%0afor%28uint16%20index%20=%200,%20vertex%20=%200;%20index%20%3c%20c_num_indices;%20index%20&#43;=%206,%20vertex%20&#43;=%204%29%0a%7b%0a%20%20%20//%20quads%20will%20be%20top%20left,%20bottom%20left,%20bottom%20right,%20top%20right%0a%20%20%20indices[index]%20=%20vertex;%20%20%20%20%20%20%20%20%20%20%20%20%20%20//%200%0a%20%20%20indices[index%20&#43;%201]%20=%20vertex%20&#43;%202;%20%20%20%20%20%20//%202%0a%20%20%20indices[index%20&#43;%202]%20=%20vertex%20&#43;%201;%20%20%20%20%20%20//%201%0a%20%20%20indices[index%20&#43;%203]%20=%20vertex;%20%20%20%20%20%20%20%20%20%20//%200%0a%20%20%20indices[index%20&#43;%204]%20=%20vertex%20&#43;%203;%20%20%20%20%20%20//%203%0a%20%20%20indices[index%20&#43;%205]%20=%20vertex%20&#43;%202;%20%20%20%20%20%20//%202%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="n">uint32</span> <span class="n">c_num_indices</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">c_max_clients</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint16</span> <span class="n">indices</span><span class="p">[</span><span class="n">c_num_indices</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span><span class="p">(</span><span class="n">uint16</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vertex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">c_num_indices</span><span class="p">;</span> <span class="n">index</span> <span class="o">+=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">vertex</span> <span class="o">+=</span> <span class="mi">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// quads will be top left, bottom left, bottom right, top right
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">indices</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">;</span>              <span class="c1">// 0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">indices</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertex</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>      <span class="c1">// 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">indices</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>      <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">indices</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">;</span>          <span class="c1">// 0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">indices</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertex</span> <span class="o">+</span> <span class="mi">3</span><span class="p">;</span>      <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">indices</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertex</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>      <span class="c1">// 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>We create the indices which will be uploaded to the index buffer to draw the rectangles. This won&rsquo;t need to change after it&rsquo;s set initially.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">Graphics</span><span class="o">::</span><span class="n">State</span> <span class="n">graphics_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Graphics</span><span class="o">::</span><span class="n">init</span><span class="p">(</span><span class="n">window_handle</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">c_window_width</span><span class="p">,</span> <span class="n">c_window_height</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">               <span class="n">c_num_vertices</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">c_num_indices</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">graphics_state</span><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Finally we initialise the graphics system, which stores some relevant state in a Graphics::State struct which is used later to draw.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20init%20winsock%0aif%20%28!Net::init%28%29%29%0a%7b%0a%20%20%20log_warning%28%22Net::init%20failed%5cn%22%29;%0a%20%20%20return%200;%0a%7d%0aNet::Socket%20sock;%0aif%20%28!Net::socket_create%28&amp;sock%29%29%0a%7b%0a%20%20%20log_warning%28%22create_socket%20failed%5cn%22%29;%0a%20%20%20return%200;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="c1">// init winsock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Net</span><span class="o">::</span><span class="n">init</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">log_warning</span><span class="p">(</span><span class="s">&#34;Net::init failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">Net</span><span class="o">::</span><span class="n">Socket</span> <span class="n">sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Net</span><span class="o">::</span><span class="n">socket_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sock</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">log_warning</span><span class="p">(</span><span class="s">&#34;create_socket failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>I&rsquo;ve taken the winsock code needed by both the client and the server, and moved it to common_net.cpp. This just has some basic utlities for creating sockets, sending/receiving packets, etc. Some client/server specific netcode is in client_net.cpp and server_net.cpp respectively, this is just to stop the compiler complaining that I never call some of those functions when compiling one application or the other.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">uint8</span> <span class="n">buffer</span><span class="p">[</span><span class="n">c_socket_buffer_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">Net</span><span class="o">::</span><span class="n">IP_Endpoint</span> <span class="n">server_endpoint</span> <span class="o">=</span> <span class="n">Net</span><span class="o">::</span><span class="n">ip_endpoint_create</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">c_port</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint8</span><span class="p">)</span><span class="n">Client_Message</span><span class="o">::</span><span class="n">Join</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Net</span><span class="o">::</span><span class="n">socket_send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sock</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">server_endpoint</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">log_warning</span><span class="p">(</span><span class="s">&#34;join message failed to send</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_04/img001_hu85e0e42a76674c1f81aa446cdd6da12f_125096_1000x0_resize_box_3.png"/>
+<sub>Client_Message::Join packet layout</sub></p>
+<p>This is the buffer we&rsquo;ll use for reading/writing packets. The first thing to do is tell the server we want to join.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="struct%20Player_State%0a%7b%0a%20%20%20float32%20x,%20y,%20facing;%0a%7d;%0aPlayer_State%20objects[c_max_clients];%0auint32%20num_objects%20=%200;%0auint16%20slot%20=%200xFFFF;%0a%0aTiming_Info%20timing_info%20=%20timing_info_create%28%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Player_State</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">facing</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">Player_State</span> <span class="n">objects</span><span class="p">[</span><span class="n">c_max_clients</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint32</span> <span class="n">num_objects</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint16</span> <span class="n">slot</span> <span class="o">=</span> <span class="mh">0xFFFF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Timing_Info</span> <span class="n">timing_info</span> <span class="o">=</span> <span class="n">timing_info_create</span><span class="p">();</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The client has it&rsquo;s own version of Player_State which only contains the state which the server sends to the client (on the server there is an additional speed field), and an array of these to store the state of all the player objects. We store the slot assigned to us by the server, as this is needed for us to send input packets. Lastly the Timing_Info struct contains some data about the frequency of the performance counter, and whether or not our desired sleep granularity was set - these are both used to wait for the end of the tick at the end of each main loop iteration (more detail on this in part 2).</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20main%20loop%0ag_is_running%20=%201;%0awhile%28%20g_is_running%20%29%0a%7b%0a%20%20%20LARGE_INTEGER%20tick_start_time;%0a%20%20%20QueryPerformanceCounter%28&amp;tick_start_time%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="c1">// main loop
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">g_is_running</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span><span class="p">(</span> <span class="n">g_is_running</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">LARGE_INTEGER</span> <span class="n">tick_start_time</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">QueryPerformanceCounter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tick_start_time</span><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>At the beginning of each tick we sample the clock.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="%20%20%20//%20Windows%20messages%0a%20%20%20MSG%20message;%0a%20%20%20UINT%20filter_min%20=%200;%0a%20%20%20UINT%20filter_max%20=%200;%0a%20%20%20UINT%20remove_message%20=%20PM_REMOVE;%0a%20%20%20while%28%20PeekMessage%28%20&amp;message,%20window_handle,%20filter_min,%20filter_max,%20remove_message%20%29%20%29%0a%20%20%20%7b%0a%20%20%20%20%20%20TranslateMessage%28%20&amp;message%20%29;%0a%20%20%20%20%20%20DispatchMessage%28%20&amp;message%20%29;%0a%20%20%20%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">   <span class="c1">// Windows messages
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">MSG</span> <span class="n">message</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">UINT</span> <span class="n">filter_min</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">UINT</span> <span class="n">filter_max</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">UINT</span> <span class="n">remove_message</span> <span class="o">=</span> <span class="n">PM_REMOVE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">while</span><span class="p">(</span> <span class="n">PeekMessage</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">message</span><span class="p">,</span> <span class="n">window_handle</span><span class="p">,</span> <span class="n">filter_min</span><span class="p">,</span> <span class="n">filter_max</span><span class="p">,</span> <span class="n">remove_message</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">TranslateMessage</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">message</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">DispatchMessage</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">message</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Standard windows message pump stuff (look at win32 programming resources for further information on what this is).</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="%20%20%20//%20Process%20Packets%0a%20%20%20Net::IP_Endpoint%20from;%0a%20%20%20uint32%20bytes_received;%0a%20%20%20while%20%28Net::socket_receive%28&amp;sock,%20buffer,%20c_socket_buffer_size,%20&amp;from,%20&amp;bytes_received%29%29%0a%20%20%20%7b%0a%20%20%20%20%20%20switch%20%28buffer[0]%29%0a%20%20%20%20%20%20%7b">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">   <span class="c1">// Process Packets
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">Net</span><span class="o">::</span><span class="n">IP_Endpoint</span> <span class="n">from</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">uint32</span> <span class="n">bytes_received</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span><span class="n">Net</span><span class="o">::</span><span class="n">socket_receive</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sock</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">c_socket_buffer_size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">from</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_received</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">switch</span> <span class="p">(</span><span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>This loop will keep grabbing packets from the socket for as long as there are any available.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">         <span class="k">case</span> <span class="n">Server_Message</span><span class="o">::</span><span class="nl">Join_Result</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">               <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slot</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">slot</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">               <span class="n">log_warning</span><span class="p">(</span><span class="s">&#34;server didn&#39;t let us in</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">         <span class="k">break</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_04/img002_hu70c8da82aee435d6c0d03d3f919bbc41_104385_1000x0_resize_box_3.png"/>
+<sub>Server_Message::Join_Result packet layout on failure</sub>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_04/img003_huafb0c0d543966ea5ebb1dd4292a5927e_180815_1000x0_resize_box_3.png"/>
+<sub>Server_Message::Join_Result packet layout on success</sub></p>
+<p>See server.cpp for corresponding code where this message is sent. The first byte is a 0 or 1 indicating whether we were allowed to join. If that byte is 1, then the next 2 bytes are a uint16 for our slot.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">         <span class="k">case</span> <span class="n">Server_Message</span><span class="o">::</span><span class="nl">State</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">num_objects</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">uint32</span> <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">while</span> <span class="p">(</span><span class="n">bytes_read</span> <span class="o">&lt;</span> <span class="n">bytes_received</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">               <span class="n">uint16</span> <span class="n">id</span><span class="p">;</span> <span class="c1">// unused
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>               <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">id</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="n">bytes_read</span><span class="p">],</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">               <span class="n">bytes_read</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">               <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">x</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                      <span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="n">bytes_read</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">                      <span class="k">sizeof</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">x</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">               <span class="n">bytes_read</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">               <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">y</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                      <span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="n">bytes_read</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">                      <span class="k">sizeof</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">y</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">               <span class="n">bytes_read</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">               <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">facing</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                      <span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="n">bytes_read</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">                      <span class="k">sizeof</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">facing</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">               <span class="n">bytes_read</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">objects</span><span class="p">[</span><span class="n">num_objects</span><span class="p">].</span><span class="n">facing</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">               <span class="o">++</span><span class="n">num_objects</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">         <span class="k">break</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_04/img004_hub31cd663b67de0174f4d835ce6411860_231071_1000x0_resize_box_3.png"/>
+<sub>Server_Message::State packet layout</sub></p>
+<p>A state packet contains all the player objects, so we just read until we run out of bytes. The server sends the slot (called id here) which we currently don&rsquo;t use, in future we will use this field to figure out which object the player actually owns.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="%20%20%20%20%20%20%7d%0a%20%20%20%7d%0a%0a%20%20%20//%20Send%20input%0a%20%20%20if%20%28slot%20!=%200xFFFF%29%0a%20%20%20%7b%0a%20%20%20%20%20%20buffer[0]%20=%20%28uint8%29Client_Message::Input;%0a%20%20%20%20%20%20int%20bytes_written%20=%201;%0a%0a%20%20%20%20%20%20memcpy%28&amp;buffer[bytes_written],%20&amp;slot,%20sizeof%28slot%29%29;%0a%20%20%20%20%20%20bytes_written%20&#43;=%20sizeof%28slot%29;%0a%0a%20%20%20%20%20%20uint8%20input%20=%20%20%28uint8%29g_input.up%20%7c%20%0a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%28%28uint8%29g_input.down%20%20%3c%3c%201%29%20%7c%20%0a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%28%28uint8%29g_input.left%20%20%3c%3c%202%29%20%7c%20%0a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%28%28uint8%29g_input.right%20%3c%3c%203%29;%0a%20%20%20%20%20%20buffer[bytes_written]%20=%20input;%0a%20%20%20%20%20%20&#43;&#43;bytes_written;%0a%0a%20%20%20%20%20%20if%20%28!Net::socket_send%28&amp;sock,%20buffer,%20bytes_written,%20&amp;server_endpoint%29%29%0a%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20log_warning%28%22socket_send%20failed%5cn%22%29;%0a%20%20%20%20%20%20%7d%20%20%20%20%20%20%20%20%20%0a%20%20%20%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// Send input
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">if</span> <span class="p">(</span><span class="n">slot</span> <span class="o">!=</span> <span class="mh">0xFFFF</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint8</span><span class="p">)</span><span class="n">Client_Message</span><span class="o">::</span><span class="n">Input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">int</span> <span class="n">bytes_written</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="n">bytes_written</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">slot</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">slot</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="n">bytes_written</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">slot</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">uint8</span> <span class="n">input</span> <span class="o">=</span>  <span class="p">(</span><span class="n">uint8</span><span class="p">)</span><span class="n">g_input</span><span class="p">.</span><span class="n">up</span> <span class="o">|</span> 
+</span></span><span class="line"><span class="cl">                    <span class="p">((</span><span class="n">uint8</span><span class="p">)</span><span class="n">g_input</span><span class="p">.</span><span class="n">down</span>  <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> 
+</span></span><span class="line"><span class="cl">                    <span class="p">((</span><span class="n">uint8</span><span class="p">)</span><span class="n">g_input</span><span class="p">.</span><span class="n">left</span>  <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="o">|</span> 
+</span></span><span class="line"><span class="cl">                    <span class="p">((</span><span class="n">uint8</span><span class="p">)</span><span class="n">g_input</span><span class="p">.</span><span class="n">right</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">buffer</span><span class="p">[</span><span class="n">bytes_written</span><span class="p">]</span> <span class="o">=</span> <span class="n">input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">++</span><span class="n">bytes_written</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Net</span><span class="o">::</span><span class="n">socket_send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sock</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">bytes_written</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">server_endpoint</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="n">log_warning</span><span class="p">(</span><span class="s">&#34;socket_send failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>         
+</span></span><span class="line"><span class="cl">   <span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_04/img005_hu2696efea5b85fd86648fd4d5cb764b22_217573_1000x0_resize_box_3.png"/>
+<sub>Client_Message::Input packet layout</sub></p>
+<p>Each tick we send our input. When key events are sent to the window, relevant information is stored in this global g_input struct. This packet just has the four buttons encoded in a bitfield.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="%20%20%20//%20Draw%0a%20%20%20for%20%28uint32%20i%20=%200;%20i%20%3c%20num_objects;%20&#43;&#43;i%29%0a%20%20%20%7b%0a%20%20%20%20%20%20constexpr%20float32%20size%20=%200.05f;%0a%20%20%20%20%20%20float32%20x%20=%20objects[i].x%20*%200.01f;%0a%20%20%20%20%20%20float32%20y%20=%20objects[i].y%20*%20-0.01f;%0a%0a%20%20%20%20%20%20uint32%20verts_start%20=%20i%20*%204;%0a%20%20%20%20%20%20vertices[verts_start].pos_x%20=%20x%20-%20size;%20//%20TL%20%28hdc%20y%20is%20&#43;ve%20down%20screen%29%0a%20%20%20%20%20%20vertices[verts_start].pos_y%20=%20y%20-%20size;%0a%20%20%20%20%20%20vertices[verts_start%20&#43;%201].pos_x%20=%20x%20-%20size;%20//%20BL%0a%20%20%20%20%20%20vertices[verts_start%20&#43;%201].pos_y%20=%20y%20&#43;%20size;%0a%20%20%20%20%20%20vertices[verts_start%20&#43;%202].pos_x%20=%20x%20&#43;%20size;%20//%20BR%0a%20%20%20%20%20%20vertices[verts_start%20&#43;%202].pos_y%20=%20y%20&#43;%20size;%0a%20%20%20%20%20%20vertices[verts_start%20&#43;%203].pos_x%20=%20x%20&#43;%20size;%20//%20TR%0a%20%20%20%20%20%20vertices[verts_start%20&#43;%203].pos_y%20=%20y%20-%20size;%0a%20%20%20%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">   <span class="c1">// Draw
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">for</span> <span class="p">(</span><span class="n">uint32</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_objects</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">constexpr</span> <span class="n">float32</span> <span class="n">size</span> <span class="o">=</span> <span class="mf">0.05f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">float32</span> <span class="n">x</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span> <span class="o">*</span> <span class="mf">0.01f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">float32</span> <span class="n">y</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span> <span class="o">*</span> <span class="o">-</span><span class="mf">0.01f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">uint32</span> <span class="n">verts_start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span><span class="p">].</span><span class="n">pos_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">size</span><span class="p">;</span> <span class="c1">// TL (hdc y is +ve down screen)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span><span class="p">].</span><span class="n">pos_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="n">pos_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">size</span><span class="p">;</span> <span class="c1">// BL
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="n">pos_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="mi">2</span><span class="p">].</span><span class="n">pos_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span> <span class="c1">// BR
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="mi">2</span><span class="p">].</span><span class="n">pos_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="mi">3</span><span class="p">].</span><span class="n">pos_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span> <span class="c1">// TR
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="mi">3</span><span class="p">].</span><span class="n">pos_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Here we run through each object we read from the most recent state packet, and compute the 4 vertex positions to represent it.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="%20%20%20for%20%28uint32%20i%20=%20num_objects;%20i%20%3c%20c_max_clients;%20&#43;&#43;i%29%0a%20%20%20%7b%0a%20%20%20%20%20%20uint32%20verts_start%20=%20i%20*%204;%0a%20%20%20%20%20%20for%20%28uint32%20j%20=%200;%20j%20%3c%204;%20&#43;&#43;j%29%0a%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20vertices[verts_start%20&#43;%20j].pos_x%20=%20vertices[verts_start%20&#43;%20j].pos_y%20=%200.0f;%0a%20%20%20%20%20%20%7d%0a%20%20%20%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">   <span class="k">for</span> <span class="p">(</span><span class="n">uint32</span> <span class="n">i</span> <span class="o">=</span> <span class="n">num_objects</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">c_max_clients</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">uint32</span> <span class="n">verts_start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">for</span> <span class="p">(</span><span class="n">uint32</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">pos_x</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">verts_start</span> <span class="o">+</span> <span class="n">j</span><span class="p">].</span><span class="n">pos_y</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Then zero the x and y positions of all vertices for player objects which have no actual player to show.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">   <span class="n">Graphics</span><span class="o">::</span><span class="n">update_and_draw</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">c_num_vertices</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">graphics_state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">wait_for_tick_end</span><span class="p">(</span><span class="n">tick_start_time</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">timing_info</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Then pass the updated vertices to the graphics system to update and draw, and finally wait for the tick to end, before starting all over again!</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl">   <span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint8</span><span class="p">)</span><span class="n">Client_Message</span><span class="o">::</span><span class="n">Leave</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="kt">int</span> <span class="n">bytes_written</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="n">bytes_written</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">slot</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">slot</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Net</span><span class="o">::</span><span class="n">socket_send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sock</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">bytes_written</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">server_endpoint</span><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_04/img006_hu812244f8019f4ba7f9587da989cf97f7_116161_1000x0_resize_box_3.png"/>
+<sub>Client_Message::Leave packet layout</sub></p>
+<p>Just before the application exits, the client sends a message to the server to say we&rsquo;re going. If we don&rsquo;t send this, the server will time us out after some time, but it&rsquo;s preferable to notify the server properly so the slot that was allocated to this client can be re-used immediately.</p>
+<p>This part doesn&rsquo;t feel like much of an improvement, just rebuilding what we already had. However, it&rsquo;s a necessary step for things we&rsquo;ll want to do later.</p>
+
+            
+        </div>
+    </article>
+
+        </main>
+
+        <footer class="footer">
+    <div class="footer-left">
+        <ul class="social">
+            
+
+            
+                <li>Joe Best-Rotheray</li>
+            
+
+            
+                
+                    <li>
+                        
+                            <a href="mailto:joe@codersblock.org" target="_blank">
+                                <i class="bi-envelope"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="spectre1989" target="_blank">
+                                <i class="bi-github"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="joebestrotheray" target="_blank">
+                                <i class="bi-linkedin"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="codersblock" target="_blank">
+                                <i class="bi-twitter"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+    <div class="footer-right">
+        <ul class="control status clearfix">
+            
+                <li>
+                    
+                        Word Count:
+                        1984
+                    
+                </li>
+            
+
+            
+            
+
+            
+                <li>en</li>
+            
+
+            
+                <li>
+                    <a href="https://gohugo.io" class="btn" target="_blank"
+                        >Hugo: 0.121.2</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    <a
+                        href="https://github.com/JingWangTW/dark-theme-editor"
+                        class="btn"
+                        target="_blank"
+                        >Theme: dark-theme-editor</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    
+                        Last modified: &nbsp;
+                        <time>
+                            Jul 03 2017 00:00:00
+                        </time>
+                    
+                </li>
+            
+
+            
+                <li title="">
+                    
+                </li>
+            
+        </ul>
+    </div>
+</footer>
+
+    </body>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    <script
+        type="text/javascript"
+        src="/js/index_d751713.min.5eeb120f16ea146352725c420364f87befead45f678142b8f0ffbef024646931fbc06bff07a7bd6cb57fa2f8cd8a21ba6a4ee5a278ec32303a378bc1cd17f246.js"
+        integrity="sha512-XusSDxbqFGNSclxCA2T4e&#43;/q1F9ngUK48P&#43;&#43;8CRkaTH7wGv/B6e9bLV/ovjNiiG6ak7lonjsMjA6N4vBzRfyRg=="></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+
+
+
+</html>

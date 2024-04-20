@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="generator" content="Hugo 0.121.2">
+
+    
+
+    
+
+    
+        
+            <meta
+                name="description"
+                content="Adventures in netcode, game engines, and game development" />
+        
+
+        
+            <meta
+                name="keywords"
+                content="netcode,programming,gamedev,c&#43;&#43;,unreal,UE5,unity,games,sockets" />
+        
+
+        
+            <meta
+                name="author"
+                content="Joe Best-Rotheray" />
+        
+
+    
+
+
+    <title>
+        
+            Making a Multiplayer FPS in C&#43;&#43; Part 1: Hello Multiplayer World |
+            
+        
+    </title>
+
+    
+
+
+    
+    
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+    
+
+
+    
+    
+        
+            
+            
+        
+    
+
+    
+
+    
+
+        
+        
+
+
+        
+        
+
+
+        <link
+            rel="stylesheet"
+            href="/css/index_b09f3b5.min.981b5487040e8fce2ff189ee791909f986edaaa96533f9897e9d4d1098f144164fedf5c696cd286fd09c8ad2d28103cfb60098771aa1d69f6a896abe6a57329c.css"
+            integrity="sha512-mBtUhwQOj84v8YnueRkJ&#43;YbtqqllM/mJfp1NEJjxRBZP7fXGls0ob9CcitLSgQPPtgCYdxqh1p9qiWq&#43;alcynA==" />
+    
+
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+</head>
+
+
+
+    <body>
+        <header class="header">
+    <div class="header_left">
+        
+    </div>
+
+    <div class="header_middle">
+        
+            Making a Multiplayer FPS in C&#43;&#43; Part 1: Hello Multiplayer World -
+            
+        
+    </div>
+</header>
+
+
+
+        <main>
+            <aside class="sidebar">
+    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li
+                    
+                        class="dir opened-dir"
+                    >
+                    <span class="dir-text"> Making a Multiplayer FPS in C&#43;&#43; </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part8/" title="./multiplayer-fps/part8/">
+                         Part 8: Client-Side Prediction Revisited 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part7/" title="./multiplayer-fps/part7/">
+                         Part 7: The Vulkan Projection Matrix 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part6/" title="./multiplayer-fps/part6/">
+                         Part 6: Cleanup 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part5/" title="./multiplayer-fps/part5/">
+                         Part 5: Client-Side Prediction 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part4/" title="./multiplayer-fps/part4/">
+                         Part 4: Rebuilding The Client in C&#43;&#43; 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part3/" title="./multiplayer-fps/part3/">
+                         Part 3: Multiple Players 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part2/" title="./multiplayer-fps/part2/">
+                         Part 2: The Main Loop 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part1/" title="./multiplayer-fps/part1/">
+                         Part 1: Hello Multiplayer World 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+            
+                <li
+                    
+                        class="dir closed-dir"
+                    >
+                    <span class="dir-text"> Posts </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/unity-client-side-prediction/" title="./posts/unity-client-side-prediction/">
+                         Client-Side Prediction With Physics In Unity 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/ditching-the-mutex/" title="./posts/ditching-the-mutex/">
+                         Ditching the Mutex 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+    </ul>
+
+
+</aside>
+<aside class="exapandable"></aside>
+
+
+            
+    <article class="main">
+        <button
+    class="sidebar-toggle-btn"
+    type="menu"
+    aria-expanded="false"
+    aria-haspopup="true">
+    <i class="bi bi-list"></i>
+</button>
+
+
+        
+            <div class="headerLogo">
+                <a href="https://codersblock.org/"><img src="https://codersblock.org/images/logo.png"/></a>
+            </div>
+        
+        <div class="title">
+            <h1 class="title-header">
+                Making a Multiplayer FPS in C&#43;&#43; Part 1: Hello Multiplayer World
+            </h1>
+
+            <div class="author-date-readtime">
+                
+
+                    
+                        <div class="author" title="Author">
+                            <i class="bi bi-person"></i>
+                            <a
+                                href="/author/joe-best-rotheray/"
+                                class="cat-btn">
+                                Joe Best-Rotheray
+                            </a>
+                        </div>
+                    
+
+                
+
+                
+                    <div class="date" title="Date">
+                        <i class="bi bi-calendar3"></i>
+                        <time
+                            datetime="2016.08.14"
+                            >2016.08.14
+                        </time>
+                    </div>
+                
+
+                
+                    <div
+                        class="readtime"
+                        title="Time to Read">
+                        <i class="bi bi-clock"></i>
+                        13 mins to read
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="article-meta">
+            
+
+            
+
+            
+                <div class="breadcumb">
+                    <i class="bi bi-folder"></i>
+                    
+    
+    
+
+
+
+
+<a href="https://codersblock.org/" class="bread-btn">
+    
+        <i class="bi bi-house-fill"></i>
+    
+
+    
+        Home
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/multiplayer-fps/" class="bread-btn">
+    
+
+    
+        Making a Multiplayer FPS in C&#43;&#43;
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/multiplayer-fps/part1/" class="bread-btn">
+    
+
+    
+        Part 1: Hello Multiplayer World
+    
+</a>
+
+                </div>
+            
+
+            
+        </div>
+
+        
+            
+
+        
+
+
+        <div class="content">
+            
+                <p>I write netcode because I love it. The problems that have to be solved in online games are particularly interesting to me - how to hide lag, how to replicate game state, how to compress data to save bandwidth, etc. I&rsquo;ve spent most of my career working on multiplayer games of one sort or another - I built a couple of MMO clients at an indie startup, I was part of the online services team of Total War: Arena, and most recently I was on the network team for Halo Wars 2 DLC. My work has always been confined to just the client, or just services, or just some particular area. It&rsquo;s a necessity of modern game development that you can&rsquo;t do everything (or even some of everything), unless you&rsquo;re at a really small studio. I&rsquo;d like to though, so I&rsquo;m going to try to do it in some small way, and write about it here.</p>
+<p>In particular my interest is in networking action games, and specifically the king of multiplayer action games - twitchy first-person shooters.</p>
+<h3 id="the-plan">The Plan</h3>
+<p>The fundamental (and most interesting in my view) part of any online game is the <em><strong>network model</strong></em> - i.e. how is the game state replicated between different players, and how do you go about letting all the players affect their shared game world.</p>
+<p>The first question is topology - <em><strong>peer-to-peer</strong></em> or <em><strong>client-server</strong></em>? The former has all players connected to each-other, and in the latter all players connect to a common server machine which acts as a relay for data. Generally speaking, peer-to-peer doesn&rsquo;t scale well. It has some real advantages, but I&rsquo;d like to be able to handle 20 or 30 players, perhaps more, so that alone means client-server is the only option.</p>
+<p>Then there&rsquo;s the question of trust - how much can the server trust the client. You can let the client tell the server &ldquo;I&rsquo;m over here now, and I&rsquo;m doing xyz&rdquo;, or you can have the client send their input to the server, and the server tells them the result. It is easier to trust the client, but it makes it far easier for players to cheat.</p>
+<p>Due to potential cheating, trusting the client really isn&rsquo;t an option for a competitive game. Even for a purely co-operative game, cheating can really ruin the whole experience for those who want to play properly. Maybe it&rsquo;s appropriate for a game which will only really be played with friends or something.</p>
+<p>Hybrid solutions are also possible, where the server trusts the client a bit, but performs validation. For example the client tells the server where they are, and the server does its best to make sure they&rsquo;re not moving too fast and haven&rsquo;t walked through any solid objects.</p>
+<p>I don&rsquo;t like the hybrid solution to be honest. If the validation is too strict, it may detect false positives when looking for cheating. On the other hand, if it&rsquo;s not strict enough, it&rsquo;ll miss things. For those reasons, I like servers to be fully authoritative, the downside of which is that the server ends up doing more work, as it has to fully run the game simulation.</p>
+<p>When synchronising the server and client, there are a few options to consider:</p>
+<ul>
+<li><em><strong>Snapshot Interpolation</strong></em> - server sends regular snapshots of visual state (e.g. position and rotation), the client interpolates between them
+
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_01/img001_hu1ee15a7dee3301fea5be420b9681ff59_104682_1000x0_resize_box_3.png"/></li>
+<li><em><strong>State Synchronisation</strong></em> - server sends a fuller set of game state (e.g. sending position, rotation, and velocity), and the simulation runs on both the client and the server which fills in the gaps between the received sets of state
+
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_01/img002_hu88f9a12a6e6009b4e8262f8c6eacb525_63078_1000x0_resize_box_3.png"/></li>
+<li><em><strong>Deterministic Lockstep</strong></em> - clients send their input to eachother, and then all step the simulation forward as one</li>
+</ul>
+<p>I think snapshot interpolation is the best option, though it does have some downsides. The interpolation itself does introduce some extra latency (i.e. the client always needs at least 2 state packets in hand, to interpolate <em><strong>from</strong></em> and <em><strong>to</strong></em>.)</p>
+<p>State synchronisation however can be a real pain - you have to carefully pick which parts of the state to send to the client (you want to save bandwidth). A change to game code can require a change to network code, this is very brittle, and asking for multiplayer bugs which are difficult to diagnose. In order for the client to run the simulation for replicated objects, the state sent from server to client is larger than with snapshots. In addition to this, the data sent to the client has to be more accurate, and cannot be as compressed as snapshots can be. As a result of both of these points, individual objects have to be updated less frequently, this means that when the client and server do diverge, it will take longer to correct - resulting in unsightly popping.</p>
+<p>The last option in the list is only really suitable for RTS games, or LAN-games. More info on those strategies <a href="http://gafferongames.com/networked-physics/introduction-to-networked-physics/">here</a>.</p>
+<h3 id="it-starts-with-sockets">It Starts With Sockets</h3>
+<p>Sending data from one machine to another is done by bundling together a series of bytes in a <em><strong>packet</strong></em>, and sending it via a <em><strong>socket</strong></em> on the sending machine, to another socket on the receiving machine. That packet might reach its destination, or it might not. It might even arrive multiple times. A series of packets could very well arrive in a completely different order from which they were sent. This sounds pretty chaotic, which might lead you to consider using TCP sockets, which guarantee that packets will arrive reliably at their destination, once, in the order in which they were sent.</p>
+<h3 id="tcp-not-even-once">TCP: Not Even Once</h3>
+<p>For any kind of action game, TCP really isn&rsquo;t viable. I&rsquo;d argue against using it even for an MMORPG with typical lock-on combat and so on. When the server is sending its stream of state packets, if one of them is dropped, then with TCP not only is it resent, but the order of packets must also be preserved. If a client doesn&rsquo;t receive one of these packets, the underlying implementation of TCP will not make the subsequent state packets available until the dropped packet has been successfully resent. From the perspective of the client, this looks like a halt in game state packets, and then a bunch all arrive at once. This is very unhelpful because the client usually only cares about the most recent state packet, and would rather just skip over the dropped packet. The only way to really deal with this is to have the client always run far enough behind the server that the player won&rsquo;t notice when a packet gets dropped, but this is completely unworkable for something like a twitchy multiplayer FPS (which will live or die on the quality of its netcode).</p>
+<h3 id="udp-to-the-rescue">UDP to the Rescue</h3>
+<p>The socket protocol I&rsquo;ll be using is UDP, which behaves a lot more like the underlying internet protocol. You can have duplicate packets, and you can have packets dropped, but a packet will either get there in it&rsquo;s entirety or not at all. There will be some kinds of packets which we will absolutely need to reliably reach their destination, possibly in the correct order. However, it&rsquo;s a bad idea to use TCP alongside UDP, as this can <a href="https://www.isoc.org/inet97/proceedings/F3/F3_1.HTM">actually induce packet loss in UDP</a>. Instead we&rsquo;ll be creating our own reliability system with UDP.</p>
+<h3 id="hello-multiplayer-world">Hello Multiplayer World</h3>
+<p>So now to start with some actual code. I&rsquo;ve created a <a href="https://github.com/spectre1989/odin">github repository</a> for this which I&rsquo;ve called &ldquo;Odin&rdquo; (I got into a pretentious habit of naming frameworks after Norse gods). Though the code will move past this point, you can browse the code at this specific commit <a href="https://github.com/spectre1989/odin/tree/c75d394ef2dfe9d71b8229836a304449f36e1940">here</a>.</p>
+<p>I created a shiny new file &lsquo;server.cpp&rsquo;, and stuck in a bog-standard main function which will be the entry point of the server program. Depending on how complicated things get, multiple server programs may eventually exist, but for now there&rsquo;s just one.</p>
+<p>To use sockets on Windows, we&rsquo;ll be using Winsock, so the first thing to do is include the Winsock header &lt;winsock2.h&gt;. I&rsquo;ll also include &lt;stdio.h&gt; for things like printf. Before we can use any Winsock functions, we need to first call WSAStartup. Looking at the MSDN documentation, the function signature looks like this:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="int%20WSAStartup%28%0a%20%20_In_%20%20WORD%20%20%20%20%20%20wVersionRequested,%0a%20%20_Out_%20LPWSADATA%20lpWSAData%0a%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">WSAStartup</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span>  <span class="n">WORD</span>      <span class="n">wVersionRequested</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_Out_</span> <span class="n">LPWSADATA</span> <span class="n">lpWSAData</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>We need to pass a WORD as the version we want, and a pointer to a WSADATA struct which is populated by the call (though I&rsquo;ve never actually used it). It will return 0 on success (yay Windows!), and if there is a problem we can get the error code with WSAGetLastError. The only question is what version we ask for, according to the documentation the current version is 2.2, and is supported from Windows 98 onwards, so we&rsquo;ll go for that.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">WORD</span> <span class="n">winsock_version</span> <span class="o">=</span> <span class="mh">0x202</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">WSADATA</span> <span class="n">winsock_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span> <span class="n">WSAStartup</span><span class="p">(</span> <span class="n">winsock_version</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">winsock_data</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span> <span class="s">&#34;WSAStartup failed: %d&#34;</span><span class="p">,</span> <span class="n">WSAGetLastError</span><span class="p">()</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The documentation also says we should have a call to WSACleanup when we&rsquo;re done with Winsock, you&rsquo;ll see those in the github repository, but I&rsquo;ve since learned that it&rsquo;s unneccesary to call WSACleanup on exit, as Windows will clean up Winsock for us anyway. It would only be useful to us if we wanted to unload Winsock but keep the program running for some other purpose. Now to create a socket, this can be done using the socket function - Winsock does give alternatives, but this is the one I use:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="SOCKET%20WSAAPI%20socket%28%0a%20%20_In_%20int%20af,%0a%20%20_In_%20int%20type,%0a%20%20_In_%20int%20protocol%0a%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">SOCKET</span> <span class="n">WSAAPI</span> <span class="nf">socket</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span> <span class="kt">int</span> <span class="n">af</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span> <span class="kt">int</span> <span class="n">protocol</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The first argument af stands for address family, and we&rsquo;ll be passing AF_INET for IPv4, though we might support IPv6 later. The second is type, for a UDP socket this needs to be SOCK_DGRAM. Finally protocol needs to be IPPROTO_UDP. If this returns INVALID_SOCKET then it has failed, and we can get more information about what went wrong with WSAGetLastError again.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">address_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">type</span> <span class="o">=</span> <span class="n">SOCK_DGRAM</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">protocol</span> <span class="o">=</span> <span class="n">IPPROTO_UDP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">SOCKET</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span> <span class="n">address_family</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="n">protocol</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span> <span class="n">sock</span> <span class="o">==</span> <span class="n">INVALID_SOCKET</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span> <span class="s">&#34;socket failed: %d&#34;</span><span class="p">,</span> <span class="n">WSAGetLastError</span><span class="p">()</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>When a packet is sent, not only is it sent to a particular machine, but also on a particular port. This allows a program to only receive the packets that it was actually meant to see. Before the server can start receiving packets from clients, the socket needs to be bound to a specific port. We need to pick one to use - anything below 1024 is reserved, I chose 9999. Here&rsquo;s the function signature for bind from MSDN:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="int%20bind%28%0a%20%20_In_%20SOCKET%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20s,%0a%20%20_In_%20const%20struct%20sockaddr%20*name,%0a%20%20_In_%20int%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20namelen%0a%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">bind</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span> <span class="n">SOCKET</span>                <span class="n">s</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span> <span class="k">const</span> <span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">_In_</span> <span class="kt">int</span>                   <span class="n">namelen</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Again, it will return 0 on success, otherwise we can get the error with WSAGetLastError:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">SOCKADDR_IN</span> <span class="n">local_address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">local_address</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">local_address</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span> <span class="mi">9999</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">local_address</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">INADDR_ANY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span> <span class="n">bind</span><span class="p">(</span> <span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="n">SOCKADDR</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">local_address</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span> <span class="n">local_address</span> <span class="p">)</span> <span class="p">)</span> <span class="o">==</span> <span class="n">SOCKET_ERROR</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span> <span class="s">&#34;bind failed: %d&#34;</span><span class="p">,</span> <span class="n">WSAGetLastError</span><span class="p">()</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Computer hardware doesn&rsquo;t always agree on the order in which to store bytes, usually they&rsquo;re either big-endian or little-endian (more on that <a href="https://en.wikipedia.org/wiki/Endianness">here</a>). Machines with different endianness should still be able to communicate via sockets though, and for this reason there is a specified network byte order, which is big-endian. The assignment of the port number is wrapped in a call to htons (<em><strong>h</strong></em>ost <em><strong>t</strong></em>o <em><strong>n</strong></em>etwork <em><strong>s</strong></em>hort), this converts the port number from whatever endianness the executing machine has (little-endian in my case), to big-endian.</p>
+<p>The assignment of INADDR_ANY is to allow the socket to accept packets on all interfaces. We could if we wanted, bind the socket to only receive packets from other processes running on the same machine. In our case though, we want to accept connections from other processes on the same machine, or machines on the local network, or other machines via the internet.</p>
+<p>Now to start receiving packets. For this we use recvfrom, which has the following function signature:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="int%20recvfrom%28%0a_In_%20%20%20%20%20%20%20%20SOCKET%20%20%20%20%20%20%20%20%20%20s,%0a_Out_%20%20%20%20%20%20%20char%20%20%20%20%20%20%20%20%20%20%20%20*buf,%0a_In_%20%20%20%20%20%20%20%20int%20%20%20%20%20%20%20%20%20%20%20%20%20len,%0a_In_%20%20%20%20%20%20%20%20int%20%20%20%20%20%20%20%20%20%20%20%20%20flags,%0a_Out_%20%20%20%20%20%20%20struct%20sockaddr%20*from,%0a_Inout_opt_%20int%20%20%20%20%20%20%20%20%20%20%20%20%20*fromlen%0a%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">recvfrom</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>        <span class="n">SOCKET</span>          <span class="n">s</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_Out_</span>       <span class="kt">char</span>            <span class="o">*</span><span class="n">buf</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>        <span class="kt">int</span>             <span class="n">len</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>        <span class="kt">int</span>             <span class="n">flags</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_Out_</span>       <span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="n">from</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_Inout_opt_</span> <span class="kt">int</span>             <span class="o">*</span><span class="n">fromlen</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>We need to pass in a buffer where it will store data. It&rsquo;s important that this is no smaller than the maximum size of packet which we will read. We&rsquo;ll be limiting the size of the packets we send, not just because we cannot exceed our <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</a>, but mainly because we&rsquo;ll need to do everything we can to limit bandwidth. The smaller our state packets, the more frequently we can get away with sending them, and/or the more clients we can have connected to the same instance. For now I&rsquo;ll just go for a buffer of a kilobyte, we can return to this buffer size later.</p>
+<p>The call to recvfrom also tells us who sent the packet to us. This is one of the main differences between TCP and UDP - we would need a TCP socket per client, whereas with UDP we can have all the clients send packets to a single socket. In future when we receive a packet, we&rsquo;ll use this to figure out which player it came from.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">SOCKET_BUFFER_SIZE</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">SOCKADDR_IN</span> <span class="n">from</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">from_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span> <span class="n">from</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">recvfrom</span><span class="p">(</span> <span class="n">sock</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">SOCKET_BUFFER_SIZE</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="p">(</span><span class="n">SOCKADDR</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">from</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">from_size</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span> <span class="n">bytes_received</span> <span class="o">==</span> <span class="n">SOCKET_ERROR</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">printf</span><span class="p">(</span> <span class="s">&#34;recvfrom returned SOCKET_ERROR, WSAGetLastError() %d&#34;</span><span class="p">,</span> <span class="n">WSAGetLastError</span><span class="p">()</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">buffer</span><span class="p">[</span><span class="n">bytes_received</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">printf</span><span class="p">(</span> <span class="s">&#34;%d.%d.%d.%d:%d - %s&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">from</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">S_un</span><span class="p">.</span><span class="n">S_un_b</span><span class="p">.</span><span class="n">s_b1</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">from</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">S_un</span><span class="p">.</span><span class="n">S_un_b</span><span class="p">.</span><span class="n">s_b2</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">from</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">S_un</span><span class="p">.</span><span class="n">S_un_b</span><span class="p">.</span><span class="n">s_b3</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">from</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">S_un</span><span class="p">.</span><span class="n">S_un_b</span><span class="p">.</span><span class="n">s_b4</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">from</span><span class="p">.</span><span class="n">sin_port</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">buffer</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Here all I&rsquo;m doing is interpreting the data as a string, so I write a null terminator (0) to the end of the data received, and display it with printf. Bonus points to anyone who spotted the bug with how I&rsquo;m displaying the port number there, I&rsquo;ve forgotten to convert the port number from network byte order, back to host byte order. This would be done with a call to <em><strong>ntohs</strong></em>.</p>
+<p>That&rsquo;s it for now, the server just starts up, waits for a message from a client. When it receives one it prints the message, then exits. Now for the client.</p>
+<p>The initial call to WSAStartup and creating our socket is the same as for the server, however we don&rsquo;t need to bind the socket. If you plan send data on a socket before receiving, then Windows will implicitly bind the socket for us to some unused port. This is handy for running multiple instances of the client on one computer for testing purposes. To send data we&rsquo;ll call <em><strong>sendto</strong></em>:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="int%20sendto%28%0a_In_%20%20%20%20%20%20%20SOCKET%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20s,%0a_In_%20const%20char%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20*buf,%0a_In_%20%20%20%20%20%20%20int%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20len,%0a_In_%20%20%20%20%20%20%20int%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20flags,%0a_In_%20%20%20%20%20%20%20const%20struct%20sockaddr%20*to,%0a_In_%20%20%20%20%20%20%20int%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20tolen%0a%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">sendto</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>       <span class="n">SOCKET</span>                <span class="n">s</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span> <span class="k">const</span> <span class="kt">char</span>                  <span class="o">*</span><span class="n">buf</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>       <span class="kt">int</span>                   <span class="n">len</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>       <span class="kt">int</span>                   <span class="n">flags</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>       <span class="k">const</span> <span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="n">to</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="n">_In_</span>       <span class="kt">int</span>                   <span class="n">tolen</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>My use of it looked like this:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">SOCKADDR_IN</span> <span class="n">server_address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">server_address</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">server_address</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span> <span class="n">PORT</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">server_address</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">S_un</span><span class="p">.</span><span class="n">S_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span> <span class="s">&#34;127.0.0.1&#34;</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">message</span><span class="p">[</span><span class="n">SOCKET_BUFFER_SIZE</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">gets_s</span><span class="p">(</span> <span class="n">message</span><span class="p">,</span> <span class="n">SOCKET_BUFFER_SIZE</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span> <span class="n">sendto</span><span class="p">(</span> <span class="n">sock</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span> <span class="n">message</span> <span class="p">),</span> <span class="n">flags</span><span class="p">,</span> <span class="p">(</span><span class="n">SOCKADDR</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_address</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span> <span class="n">server_address</span> <span class="p">)</span> <span class="p">)</span> <span class="o">==</span> <span class="n">SOCKET_ERROR</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span> <span class="s">&#34;sendto failed: %d&#34;</span><span class="p">,</span> <span class="n">WSAGetLastError</span><span class="p">()</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>So we just grab an input message from the user with <em><strong>gets_s</strong></em>, and send it to the server, and then exit. The server will display that message, and then exit. Not much of a game yet, but as Karl Pilkington once said - &ldquo;every step starts with a step, or whatever&rdquo;.</p>
+<p>To compile I just have two batch files, one called &lsquo;shell&rsquo;, and another called &lsquo;build&rsquo;. I start up a new instance of command prompt in the Odin directory, run shell (which runs my Visual Studio installation&rsquo;s vcvarsall), and then run &lsquo;build&rsquo; (which directly uses cl to compile my cpp files). I&rsquo;ve been watching Casey Muratori&rsquo;s excellent <a href="https://handmadehero.org/">Handmade Hero</a> series for a little while now, I&rsquo;ve been influenced somewhat by his way of doing things - these batch files are an example of that. If you want to just create a Visual Studio solution then that&rsquo;s cool, whatever works for you.</p>
+
+            
+        </div>
+    </article>
+
+        </main>
+
+        <footer class="footer">
+    <div class="footer-left">
+        <ul class="social">
+            
+
+            
+                <li>Joe Best-Rotheray</li>
+            
+
+            
+                
+                    <li>
+                        
+                            <a href="mailto:joe@codersblock.org" target="_blank">
+                                <i class="bi-envelope"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="spectre1989" target="_blank">
+                                <i class="bi-github"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="joebestrotheray" target="_blank">
+                                <i class="bi-linkedin"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="codersblock" target="_blank">
+                                <i class="bi-twitter"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+    <div class="footer-right">
+        <ul class="control status clearfix">
+            
+                <li>
+                    
+                        Word Count:
+                        2719
+                    
+                </li>
+            
+
+            
+            
+
+            
+                <li>en</li>
+            
+
+            
+                <li>
+                    <a href="https://gohugo.io" class="btn" target="_blank"
+                        >Hugo: 0.121.2</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    <a
+                        href="https://github.com/JingWangTW/dark-theme-editor"
+                        class="btn"
+                        target="_blank"
+                        >Theme: dark-theme-editor</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    
+                        Last modified: &nbsp;
+                        <time>
+                            Aug 14 2016 00:00:00
+                        </time>
+                    
+                </li>
+            
+
+            
+                <li title="">
+                    
+                </li>
+            
+        </ul>
+    </div>
+</footer>
+
+    </body>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    <script
+        type="text/javascript"
+        src="/js/index_d751713.min.5eeb120f16ea146352725c420364f87befead45f678142b8f0ffbef024646931fbc06bff07a7bd6cb57fa2f8cd8a21ba6a4ee5a278ec32303a378bc1cd17f246.js"
+        integrity="sha512-XusSDxbqFGNSclxCA2T4e&#43;/q1F9ngUK48P&#43;&#43;8CRkaTH7wGv/B6e9bLV/ovjNiiG6ak7lonjsMjA6N4vBzRfyRg=="></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+
+
+
+</html>

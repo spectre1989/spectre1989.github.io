@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="generator" content="Hugo 0.121.2">
+
+    
+
+    
+
+    
+        
+            <meta
+                name="description"
+                content="Adventures in netcode, game engines, and game development" />
+        
+
+        
+            <meta
+                name="keywords"
+                content="netcode,programming,gamedev,c&#43;&#43;,unreal,UE5,unity,games,sockets" />
+        
+
+        
+            <meta
+                name="author"
+                content="Joe Best-Rotheray" />
+        
+
+    
+
+
+    <title>
+        
+            Ditching the Mutex |
+            
+        
+    </title>
+
+    
+
+
+    
+    
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+    
+
+
+    
+    
+        
+            
+            
+        
+    
+
+    
+
+    
+
+        
+        
+
+
+        
+        
+
+
+        <link
+            rel="stylesheet"
+            href="/css/index_b09f3b5.min.981b5487040e8fce2ff189ee791909f986edaaa96533f9897e9d4d1098f144164fedf5c696cd286fd09c8ad2d28103cfb60098771aa1d69f6a896abe6a57329c.css"
+            integrity="sha512-mBtUhwQOj84v8YnueRkJ&#43;YbtqqllM/mJfp1NEJjxRBZP7fXGls0ob9CcitLSgQPPtgCYdxqh1p9qiWq&#43;alcynA==" />
+    
+
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+</head>
+
+
+
+    <body>
+        <header class="header">
+    <div class="header_left">
+        
+    </div>
+
+    <div class="header_middle">
+        
+            Ditching the Mutex -
+            
+        
+    </div>
+</header>
+
+
+
+        <main>
+            <aside class="sidebar">
+    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li
+                    
+                        class="dir closed-dir"
+                    >
+                    <span class="dir-text"> Making a Multiplayer FPS in C&#43;&#43; </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part8/" title="./multiplayer-fps/part8/">
+                         Part 8: Client-Side Prediction Revisited 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part7/" title="./multiplayer-fps/part7/">
+                         Part 7: The Vulkan Projection Matrix 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part6/" title="./multiplayer-fps/part6/">
+                         Part 6: Cleanup 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part5/" title="./multiplayer-fps/part5/">
+                         Part 5: Client-Side Prediction 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part4/" title="./multiplayer-fps/part4/">
+                         Part 4: Rebuilding The Client in C&#43;&#43; 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part3/" title="./multiplayer-fps/part3/">
+                         Part 3: Multiple Players 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part2/" title="./multiplayer-fps/part2/">
+                         Part 2: The Main Loop 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part1/" title="./multiplayer-fps/part1/">
+                         Part 1: Hello Multiplayer World 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+            
+                <li
+                    
+                        class="dir opened-dir"
+                    >
+                    <span class="dir-text"> Posts </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/unity-client-side-prediction/" title="./posts/unity-client-side-prediction/">
+                         Client-Side Prediction With Physics In Unity 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/ditching-the-mutex/" title="./posts/ditching-the-mutex/">
+                         Ditching the Mutex 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+    </ul>
+
+
+</aside>
+<aside class="exapandable"></aside>
+
+
+            
+    <article class="main">
+        <button
+    class="sidebar-toggle-btn"
+    type="menu"
+    aria-expanded="false"
+    aria-haspopup="true">
+    <i class="bi bi-list"></i>
+</button>
+
+
+        
+            <div class="headerLogo">
+                <a href="https://codersblock.org/"><img src="https://codersblock.org/images/logo.png"/></a>
+            </div>
+        
+        <div class="title">
+            <h1 class="title-header">
+                Ditching the Mutex
+            </h1>
+
+            <div class="author-date-readtime">
+                
+
+                    
+                        <div class="author" title="Author">
+                            <i class="bi bi-person"></i>
+                            <a
+                                href="/author/joe-best-rotheray/"
+                                class="cat-btn">
+                                Joe Best-Rotheray
+                            </a>
+                        </div>
+                    
+
+                
+
+                
+                    <div class="date" title="Date">
+                        <i class="bi bi-calendar3"></i>
+                        <time
+                            datetime="2016.06.02"
+                            >2016.06.02
+                        </time>
+                    </div>
+                
+
+                
+                    <div
+                        class="readtime"
+                        title="Time to Read">
+                        <i class="bi bi-clock"></i>
+                        28 mins to read
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="article-meta">
+            
+
+            
+
+            
+                <div class="breadcumb">
+                    <i class="bi bi-folder"></i>
+                    
+    
+    
+
+
+
+
+<a href="https://codersblock.org/" class="bread-btn">
+    
+        <i class="bi bi-house-fill"></i>
+    
+
+    
+        Home
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/posts/" class="bread-btn">
+    
+
+    
+        Posts
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/posts/ditching-the-mutex/" class="bread-btn">
+    
+
+    
+        Ditching the Mutex
+    
+</a>
+
+                </div>
+            
+
+            
+        </div>
+
+        
+            <nav id="TableOfContents"></nav>
+        
+
+
+        <div class="content">
+            
+                <p>TL;DR - I wrote a multiple-producer multiple-consumer queue without any mutexes, it&rsquo;s pretty fast, <a href="https://github.com/spectre1989/fast_mpmc_queue">GitHub</a>.</p>
+<p>About a year ago, a colleague was explaining why Erlang is so scalable, and it essentially comes down to a lack of shared memory. When you have two or more threads which share a section of memory, then whenever a thread is writing to that memory, no other threads can perform a read or write at the same time. This can result in code spending too much time waiting for the shared memory to be available for reading/writing, and therefore poor performance.</p>
+<p>Communication between threads in Erlang is instead achieved using a message queue. Each process has it&rsquo;s own queue, and other processes can add messages to it. This sounded to me like a great model for concurrency - each thread only writes its own data, and any inter-thread communication is strictly done through a message queue. I wondered if I could create a similar system in C++. My colleague told me someone already did, and it&rsquo;s called Erlang, but at present I&rsquo;m enjoying C/C++ a little too much to use anything else.</p>
+<p>I figured that mainly what this needed was a high performance concurrent message queue. In theory it would be the only point of thread synchronisation, and therefore any concurrency-related bottlenecks would happen there. I knew shared memory was slow because it involved waiting for a mutex to lock, so what about lock-free concurrent data structures I&rsquo;d heard vaguely about?</p>
+<p>For a data structure to be lock-free, it needs to allow multiple operations to happen at once (e.g. one thread adding an item to a queue, while another removes an item). If one of those threads was to be suspended part-way through, it must not stop the other(s) from finishing what they&rsquo;re doing.</p>
+<p>With only a single producer and a single consumer, this is a lot more straight-forward. This is the general idea:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="int%20data%20=%200;%0abool%20ready%20=%20false;%0a%0a//%20called%20on%20thread%201%0avoid%20produce%28%20int%20value%20%29%0a%7b%0a%09data%20=%20value;%0a%09ready%20=%20true;%0a%7d%0a%0a//%20called%20on%20thread%202%0abool%20try_consume%28%20int&amp;%20out_value%20%29%0a%7b%0a%09if%28%20ready%20%29%0a%09%7b%0a%09%09out_value%20=%20data;%0a%09%09return%20true;%0a%09%7d%0a%09return%20false;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">produce</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">data</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ready</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">bool</span> <span class="nf">try_consume</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">out_value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">ready</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">out_value</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The above code isn&rsquo;t actually safe to run. The compiler could theoretically re-order the instructions in <code>produce</code> such that <code>ready</code> is written before <code>data</code>. Similarly it could re-order the reads in <code>try_consume</code>. Not only that, certain hardware can re-order the writes to memory, or the reads from memory. Although <code>data</code> was written before <code>ready</code>, the new value of <code>ready</code> could reach main RAM (and/or caches of other cores) before the new value of <code>data</code>.</p>
+<p>This could cause a data-race - when more than one thread accesses a memory location concurrently, and at least one of those operations is a write. The C++ standard says this results in &ldquo;undefined behaviour&rdquo; - which doesn&rsquo;t mean your head catches fire, or even a crash, it just means the standard can&rsquo;t tell you what will happen. In reality it will probably be a torn read or torn write.</p>
+<p>For example, if two threads are writing to the same integer, one with 42, and the other with 196704, then the lower two bytes of the former could be combined with the higher two bytes of the latter, ending up with a value of 196650. Although a simple read/write of an integer is usually atomic (meaning it can&rsquo;t be observed part-done), it&rsquo;s not necessarily the case - for example, on x86 hardware it is only atomic if the value is naturally aligned. Simply aligning our variables may be enough to avoid a torn read/write in this case, but it still doesn&rsquo;t fix the issue of reordering of reads/writes. As of C++11 though, the tools needed to fix this are in the C++ standard library, and will be portable.</p>
+<p>The <code>&lt;atomic&gt;</code> header contains everything we&rsquo;ll need, in particular the <code>std::atomic&lt;&gt;</code> type. It has a set of functions for manipulating it atomically. Generally speaking atomic versions of integral types are lock free, but this can be checked with <code>std::atomic&lt;&gt;::is_lock_free</code>. Changing ready to be a <code>std::atomic&lt;bool&gt;</code> will take care of the alignment issues for us, prevent the compiler reordering reads/writes of ready and data, and prevent the hardware from reordering memory accesses. However, we can do better.</p>
+<p>When we write code such as <code>if( ready )</code> and <code>ready = true</code>, we&rsquo;re actually using <code>std::atomic&lt;&gt;::load</code> and <code>std::atomic&lt;&gt;::store</code>:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">ready</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span> <span class="c1">// this is equivalent to
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span> <span class="p">);</span> <span class="c1">// also equivalent to
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_seq_cst</span> <span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>They have an optional parameter with which we can actually specify the memory order constraints we want for those operations.</p>
+<ul>
+<li><strong>memory_order_relaxed</strong> - no synchronisation or ordering constraints, only atomicity is required</li>
+<li><strong>memory_order_acquire</strong> - memory operations after this load cannot be reordered before it
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_001_hu7575b5a99ce4cf58f518bea5e73ee9bd_1310133_1000x0_resize_box_3.png"/></li>
+<li><strong>memory_order_release</strong> - memory operations before this write cannot be reordered past it
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_002_hu85c6918ed70b4e495591ec76e63c5342_1309164_1000x0_resize_box_3.png"/></li>
+<li><strong>memory_order_seq_cst</strong> - both an acquire and release operation, plus a single total order exists in which all threads observe all modifications in the same order (I don&rsquo;t use this, so won&rsquo;t talk about it further, but more info <a href="https://en.cppreference.com/w/cpp/atomic/memory_order#Sequentially-consistent_ordering">here</a>), this is the default memory order for <code>load</code> and <code>store</code></li>
+</ul>
+<p>When an acquire operation in thread B reads the value which was stored by a release operation in thread A, then any side effects (that is, modifications made to other variables) before the store in A, become visible in B after the load. For example, thread A populates an array with data, then sets an atomic boolean to true with a release store. Thread B then loads the value of true with an acquire load, the data written by thread A to the array will now be visible to thread B.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_003_huc83e9639ed587fa41ca00d3cb35778d5_1405066_1000x0_resize_q75_box.jpeg"/></p>
+<p>So, now to rework the previous example with explicit memory ordering constraints:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">produce</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">data</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Memory operations before this cannot be reordered past it
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">bool</span> <span class="nf">try_consume</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">out_value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Memory operations after this cannot be reordered before it
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span><span class="p">(</span> <span class="n">ready</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">out_value</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The write to <code>data</code> can&rsquo;t be reordered past the <code>store</code> because it uses <code>memory_order_release</code>, and the read from <code>data</code> can&rsquo;t be reordered before the <code>load</code> because it uses <code>memory_order_acquire</code>. The same effect can be achieved through slightly different means - a memory fence:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">produce</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">data</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">bool</span> <span class="nf">try_consume</span><span class="p">(</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">out_value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">ready</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">out_value</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Acquire and release fences work in a very similar manner to acquire and release operations, as you can see, an acquire load can be replaced with a relaxed load followed by an acquire fence, and a release store can be replaced with a release fence followed by a relaxed store.</p>
+<p>There is an important difference between loads/stores and fences. As I said before, a call to <code>store</code> with <code>memory_order_release</code> will prevent any preceding memory operations from being reordered past it. However, it will not prevent any subsequent memory operations from being reordered before it.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_004_hud2c67e9bc37b38f52994f7e3951c655b_363621_1000x0_resize_q75_box.jpeg"/></p>
+<p>A release fence on the other hand, will stop any preceding memory operations from being ordered past any subsequent writes. Similarly an acquire fence prevents any memory operations after the fence from being reordered before any preceding reads.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_005_hue0ab06d31c531ef8275d0d967a15e841_1330671_1000x0_resize_box_3.png"/></p>
+<p>For example, if instead of using a release fence, we used a second atomic variable:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">guard</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// called on thread 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">produce</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">data</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">guard</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>There is nothing to stop the store to <code>ready</code> from being reordered before the store to <code>guard</code>, it will only stop the assignment to <code>data</code> from being reordered past the store to <code>guard</code>.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_006_hu49c5a6dbea5490ff8e9bd36ee80cc1e4_694124_1000x0_resize_box_3.png"/></p>
+<p>The version with the fence on the other hand, does work, because the assignment to <code>data</code> cannot be reordered past any writes which come after the fence.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_007_hu2fe27b9666e0399f9759a2445355114e_708166_1000x0_resize_box_3.png"/></p>
+<p>There was one memory ordering constraint which I missed earlier, because it&rsquo;s easier to describe after talking about acquire/release operations - <code>memory_order_consume</code>. Essentially if a store is performed on an atomic object in one thread with <code>memory_order_release</code>, when you load the value in another thread with <code>memory_order_consume</code>, the side effects ordered before the store are visible after the consume, only in operations which carry a dependency from the load.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="struct%20Payload%0a%7b%0a%09int%20foo;%0a%09int%20bar;%0a%7d%0a%0aatomic%3cPayload*%3e%20payload%20=%20nullptr;%0aatomic%3cint%3e%20x%20=%200;%0a%0a//%20thread%201%0ax.store%28%207,%20std::memory_order_relaxed%20%29;%0aPayload*%20p%20=%20new%20Payload%28%29;%0ap-%3efoo%20=%201;%0ap-%3ebar%20=%202;%0apayload.store%28%20p,%20std::memory_order_release%20%29;%0a%0a//%20thread%202%0aPayload*%20p%20=%20payload.load%28%20std::memory_order_consume%20%29;%0aif%28%20p%20!=%20nullptr%20%29%0a%7b%0a%09printf%28%20%22%25d%20%25d%20%25d%22,%20p-%3efoo,%20p-%3ebar,%20x.load%28%20std::memory_order_relaxed%20%29%20%29;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Payload</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">foo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">bar</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">atomic</span><span class="o">&lt;</span><span class="n">Payload</span><span class="o">*&gt;</span> <span class="n">payload</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// thread 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">x</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="mi">7</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">Payload</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Payload</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">-&gt;</span><span class="n">foo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">-&gt;</span><span class="n">bar</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">payload</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// thread 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">Payload</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="n">payload</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_consume</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span> <span class="n">p</span> <span class="o">!=</span> <span class="k">nullptr</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printf</span><span class="p">(</span> <span class="s">&#34;%d %d %d&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">foo</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">bar</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Even though the store to <code>x</code> cannot be reordered past the store to <code>payload</code> in thread 1, it&rsquo;s not guaranteed to be a visible side effect in thread 2 after the load of payload. The values of <code>foo</code> and <code>bar</code> on the other hand, will be visible, because the value of <code>payload</code> carries a dependency into the reads of <code>foo</code> and <code>bar</code>. I won&rsquo;t mention consume operations in the rest of this post though, I didn&rsquo;t use them in my code, the last time I checked there aren&rsquo;t any compilers which actually implement it (they just replace it with acquire). See <a href="https://en.cppreference.com/w/cpp/atomic/memory_order#Release-Consume_ordering">here</a> for more info on acquire-consume, and exactly what &ldquo;carrying a dependency&rdquo; means according to the standard.</p>
+<p>So, the code now works with a single producer and a single consumer, but it gets trickier if we want multiple consumers:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">is_writing</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_produce</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">is_writing</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">is_writing</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">data</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>This code will likely not work, as multiple threads could load a value of false for <code>is_writing</code>, and then go on to write to all 3 variables.</p>
+<p>What&rsquo;s needed is an atomic operation which allows us to set <code>is_writing</code> to true, only if it is currently false. Luckily <code>&lt;atomic&gt;</code> provides several read-modify-write (RMW) operations, and the one we can use here is <a href="https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange">compare_exchange_strong</a>. It allows us to modify an atomic variable, only if it has an expected value:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">is_writing</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_produce</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">bool</span> <span class="n">expected</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">is_writing</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">data</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ready</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Note the use of <code>memory_order_relaxed</code> for the <code>compare_exchange_strong</code> call - we don&rsquo;t care about the memory ordering for this, as it is not used to synchronise any other variables. If we were to alter the value of <code>ready</code> with <code>compare_exchange_strong</code> (which would be pointless), then we would have to use <code>memory_order_release</code> to ensure the write to <code>data</code> was not reordered past the call to <code>compare_exchange_strong</code>.</p>
+<p>I based the design of the queue itself on <a href="https://github.com/LMAX-Exchange/disruptor">LMAX Disruptor</a>, though as you&rsquo;ll see if you look at the GitHub page, it&rsquo;s made up of a large number of interfaces and classes, I prefer to keep things a bit simpler. What Disruptor boils down to though, is a ring buffer - a fixed-size array which behaves as if it were connected end to end. There is a head and a tail index, items are inserted at the tail and removed at the head, each time advancing the relevant index. When one of the indexes reaches the end of the array, they simply wrap around to 0 again. When the tail catches up with the head, the buffer is full. When the head catches up with the tail, the buffer is empty. It allows you to add and remove items from a queue structure without needing to allocate and free memory on the fly, or move items around.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_008_hud3373c74cfb49ddb0851edbfd5cab8d2_1073413_1000x0_resize_box_3.png"/></p>
+<p>What Disruptor actually has is a pair of indexes for the head, and a pair for the tail. When a producer thread wants to insert an item in to the queue, it uses an RMW operation to read the first tail index and then advance it by 1. This allows the producer to &ldquo;claim&rdquo; its write index. When it has completed the write, it advances the second tail index. The same goes for reads - first a consumer thread acquires its read index, reads the value, and then advances the second read index.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_009_huba4209b7206562efe5f835f74b535f0b_610054_1000x0_resize_q75_box.jpg"/>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_010_hud74d2336e31b6d47148b147fafa42180_557277_1000x0_resize_q75_box.jpg"/>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_011_huc1005395764668996aa54415ea1e9d27_625655_1000x0_resize_q75_box.jpg"/>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_012_hu21b5b1c92efc0b7ea7d8baed0a50bdea_585805_1000x0_resize_q75_box.jpg"/></p>
+<p>You might be thinking &ldquo;but didn&rsquo;t you only need multiple producers and a single consumer?&rdquo; The answer is yes, but multiple consumers seemed more interesting, and I&rsquo;d sort of forgotten by now what the original brief was. On to implementation - I found fences a bit easier to get my head around, and given the added memory ordering constraints which they provided, I decided to write my queue with relaxed loads and stores, and purely fences for synchronisation. Initially I thought of doing something like this:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">T</span><span class="o">*</span> <span class="n">m_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">size_t</span> <span class="n">m_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">m_head_1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">m_head_2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">m_tail_1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">m_tail_2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_enqueue</span><span class="p">(</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">current_tail</span> <span class="o">=</span> <span class="n">m_tail_1</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">int</span> <span class="n">next_tail</span> <span class="o">=</span> <span class="p">(</span> <span class="n">current_tail</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">%</span> <span class="n">m_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">m_head_2</span><span class="p">.</span><span class="n">load</span><span class="p">()</span> <span class="o">==</span> <span class="n">next_tail</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// queue is full
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_tail_1</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">current_tail</span><span class="p">,</span> <span class="n">next_tail</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="n">m_data</span><span class="p">[</span><span class="n">current_tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span> <span class="n">m_tail_2</span><span class="p">.</span><span class="n">load</span><span class="p">()</span> <span class="o">!=</span> <span class="n">current_tail</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_tail_2</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">next_tail</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>This might seem OK at first, but there&rsquo;s actually a big problem here, the ABA problem. The ABA problem is when a thread reads the value of something twice, and the value is the same both times, giving the impression that nothing has changed. When what has actually happened, is another thread (or threads) has changed that value, but changed it back to the original value by the time the second read occurs. This is present in the above code, because between reading the current tail, and calling <code>compare_exchange_strong</code> to update tail, other threads could&rsquo;ve inserted and removed enough elements for the tail to be back where it was at the time of the first read. So the call to <code>compare_exchange_strong</code> operation will succeed, but the queue could be full.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_013_hu676c3c0702da7fa2fbc169ed05fed553_700359_1000x0_resize_q75_box.jpg"/>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_014_hua8a1c10b20d2a90c58e8feeb0de51b48_577070_1000x0_resize_q75_box.jpg"/></p>
+<p>The solution I used for this was to instead have the indexes continually increase, and use the modulo of the index with the size of the ring buffer to find the actual index to use. That way if the tail has lapped the entire buffer between one read and the next, the value of tail will still be different.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="bool%20try_enqueue%28%20const%20T&amp;%20value%20%29%0a%7b%0a%09const%20int%20head%20=%20m_head_2.load%28%29;%0a%09int%20tail%20=%20m_tail_1.load%28%29;%0a%09const%20int%20count%20=%20tail%20-%20head;%0a%09%0a%09if%28%20count%20%3e=%20m_size%20%29%0a%09%7b%0a%09%09//%20queue%20is%20full%0a%09%09return%20false;%0a%09%7d%0a%09%0a%09if%28%20!m_tail_1.compare_exchange_strong%28%20tail,%20tail%20&#43;%201%20%29%20%29%0a%09%7b%0a%09%09return%20false;%0a%09%7d%0a%09%0a%09m_data[tail%20%25%20m_size]%20=%20value;%0a%09%0a%09while%28%20m_tail_2.load%28%29%20!=%20tail%20%29%20%7b%7d%0a%09m_tail_2.store%28%20tail%20&#43;%201%20%29;%0a%09%0a%09return%20true;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_enqueue</span><span class="p">(</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">int</span> <span class="n">head</span> <span class="o">=</span> <span class="n">m_head_2</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">m_tail_1</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">tail</span> <span class="o">-</span> <span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">m_size</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// queue is full
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_tail_1</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">tail</span><span class="p">,</span> <span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">m_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span> <span class="n">m_tail_2</span><span class="p">.</span><span class="n">load</span><span class="p">()</span> <span class="o">!=</span> <span class="n">tail</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_tail_2</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The reason for testing count for greater-than or equal-to <code>m_size</code>, rather than just equal to <code>m_size</code>, is that between the read of head, and the read of tail, items could be added and removed from the queue. This could result in the observed values of head and tail being further apart than the actual size of the buffer.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_015_hu93a4c70959b0d30ecbbc033a14519914_671137_1000x0_resize_q75_box.jpg"/>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_016_hudd51e56287ba0b32d25d686852a87485_369097_1000x0_resize_q75_box.jpg"/></p>
+<p>You might&rsquo;ve noticed though, that eventually our head and tail indexes will overflow - and a signed integer overflow results in undefined behaviour. This will only happen after over 2 billion items have been added to the queue. It&rsquo;s not likely to happen, but it&rsquo;s really not impossible if a program were to make heavy use of one of these queues and run for weeks or months. We should make the indexes unsigned, as then the overflow at least doesn&rsquo;t result in undefined behaviour.</p>
+<p>Furthermore I actually wrote some code to deal with the indexes wrapping around - when 2 indexes are a distance apart which is greater than half of the maximum value of an unsigned integer, you assume that one of the indexes has wrapped. You do run the risk of the ABA problem again this way, as it is possible that between two reads of the same index, it could wrap all the way around to the same index. That really isn&rsquo;t going to happen with a 32-bit index though. Another alternative could be that if you have points in your program where there aren&rsquo;t multiple threads running (e.g. in-between frames in a game), you could reset the indexes to <code>index % size</code>.</p>
+<p>One thing to note if you do go down this route, is that you need to make sure either the queue size is a multiple of the maximum index value, or you write code to make the indexes wrap before they actually overflow. For example, if you had a queue of size 200, and an 8-bit index (don&rsquo;t ever do that, of course!), an index of 255 would write to an actual index of 55, but then it would overflow to 0 and carry on writing from an actual index of 0 rather than 56!</p>
+<p>However, I did all of this stuff because I assumed that on x86 a 64-bit atomic integer wouldn&rsquo;t be lock-free, but it actually is, so all of this has been unnecessary. With the range of a 64-bit unsigned integer, we really don&rsquo;t have to worry about overflowing, so we&rsquo;ll just use those from here on. I&rsquo;ve used uint64_t, I like to be clear about exactly how many bits I&rsquo;m using when it matters, and things like &ldquo;long long&rdquo; aren&rsquo;t as descriptive.</p>
+<p>So as I mentioned before, I wanted all atomic operations to be relaxed, and use fences for synchronisation. So what happens if we relax the loads of head and tail at the start of <code>try_enqueue</code>? If we load an old value for tail, it doesn&rsquo;t matter, as <code>compare_exchange_strong</code> will fail if that was the case. If a stale value is loaded for head? It actually doesn&rsquo;t matter either. When head is increased, it will only ever give us more space in the queue, so a stale value for head can only give the false impression of the queue being full, which we can live with.</p>
+<p>The call to <code>compare_exchange_strong</code> on <code>m_tail_1</code> is also fine to be relaxed, as is the load of <code>m_tail_2</code>. The store to <code>m_tail_2</code> is going to be point at which we need a fence. That store will be used to signal to reader threads that the data is written, and can be read. We need to make sure that the compiler cannot re-order this store before the write to <code>m_data</code>. Also, certain weirder architectures could re-order the stores as they gradually become visible in other threads, such that the store to <code>m_tail_2</code> becomes visible before the write to <code>m_data</code> or <code>m_tail_1</code>. So, a release fence just before the store to <code>m_tail_2</code> will make sure that reads and writes before the fence, cannot be reordered past writes which occur after the fence. The only write to occur after the fence is the store to <code>m_tail_2</code>, so the writes to <code>m_data</code> and <code>m_tail_1</code> can&rsquo;t be reordered past it:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_enqueue</span><span class="p">(</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">uint64_t</span> <span class="n">head</span> <span class="o">=</span> <span class="n">m_head_2</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="kt">uint64_t</span> <span class="o">=</span> <span class="n">m_tail_1</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">uint64_t</span> <span class="n">count</span> <span class="o">=</span> <span class="n">tail</span> <span class="o">-</span> <span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">m_size</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// queue is full
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_tail_1</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">tail</span><span class="p">,</span> <span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">m_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span> <span class="n">m_tail_2</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="o">!=</span> <span class="n">tail</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_tail_2</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Now for try_dequeue:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="bool%20try_dequeue%28%20T&amp;%20out%20%29%0a%7b%0a%09const%20uint64_t%20tail%20=%20m_tail_2.load%28%29;%0a%09uint64_t%20head%20=%20m_head_1.load%28%29;%0a%0a%09if%28%20head%20%3e=%20tail%20%29%0a%09%7b%0a%09%09//%20empty%0a%09%09return%20false;%0a%09%7d%0a%0a%09if%28%20!m_head_1.compare_exchange_strong%28%20head,%20head%20&#43;%201%20%29%20%29%0a%09%7b%0a%09%09return%20false;%0a%09%7d%0a%0a%09out%20=%20m_data[head%20%25%20m_size];%0a%0a%09while%28%20m_head_2.load%28%29%20!=%20head%20%29%20%7b%7d%0a%09m_head_2.store%28%20head%20&#43;%201%20%29;%0a%0a%09return%20true;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_dequeue</span><span class="p">(</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">out</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">uint64_t</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">m_tail_2</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint64_t</span> <span class="n">head</span> <span class="o">=</span> <span class="n">m_head_1</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">head</span> <span class="o">&gt;=</span> <span class="n">tail</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// empty
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_head_1</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">head</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">out</span> <span class="o">=</span> <span class="n">m_data</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">m_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span> <span class="n">m_head_2</span><span class="p">.</span><span class="n">load</span><span class="p">()</span> <span class="o">!=</span> <span class="n">head</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_head_2</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">head</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>When head is equal to tail then the queue is empty, and no items can be dequeued. We check for head greater-than or equal-to tail, but head can never actually be greater than tail. However, head can be greater than our observed value of tail, as between reading tail and reading head, both head and tail could be advanced by other threads adding and removing items from the queue.</p>
+<p>So now for the fences. We&rsquo;ll need a release fence like last time, for the write to <code>m_head_2</code>. There is another issue though, and that is the read from <code>m_data</code>. We can&rsquo;t be sure that if even though we&rsquo;re observing a certain value for <code>m_tail_2</code>, the corresponding side effects in <code>m_data</code> are also visible in this thread. As I said before, not only can writes to memory be re-ordered on certain architectures, so to can reads. This wouldn&rsquo;t be a problem on an architecture like x86 where I&rsquo;ll actually be running this code, but it&rsquo;s also not impossible that the compiler might move the code around such that a speculative read happens before the call of <code>compare_exchange_strong</code>.</p>
+<p>We need an acquire fence before the read from <code>m_data</code>. This ensures that all memory operations after the fence, can&rsquo;t be reordered before any reads which occur before the fence. The read we&rsquo;re particularly interested in is the read of <code>m_tail_2</code>.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_dequeue</span><span class="p">(</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">out</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="kt">uint64_t</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">m_tail_2</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint64_t</span> <span class="n">head</span> <span class="o">=</span> <span class="n">m_head_1</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">head</span> <span class="o">&gt;=</span> <span class="n">tail</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_head_1</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">head</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">out</span> <span class="o">=</span> <span class="n">m_data</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">m_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span> <span class="n">m_head_2</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="o">!=</span> <span class="n">head</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_head_2</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>I should probably mention at some point that this algorithm isn&rsquo;t technically lock-free, each writer thread must wait for the previous writer to complete and advance <code>m_tail_2</code> before it can also advance <code>m_tail_2</code> and exit. In testing though, it still easily outperformed a mutex.</p>
+<p>The code I had written at this point, worked with all the stress tests I threw at it, regardless of the optimisation options I compiled with - both on my x86/64 laptop, and my iPhone (this has an ARM processor, which has a weaker memory model than x86), both were fine.</p>
+<p>Then I found Relacy, a race detector which can actually simulate loose memory models, and interleaves threaded code to test it works in all combinations. Plus it detects a load of other cool stuff, like deadlocks, livelocks, memory leaks, this is the sort of thing I would describe as &ldquo;outrageously exciting&rdquo; at the risk of sounding like an anorak.</p>
+<p>When I ran my queue through Relacy, it kept detecting a data race, but it didn&rsquo;t make any sense to me. It was occurring at the read from <code>m_data</code>, but I could see from the output that it was reading the correct value - and the read and write were not happening concurrently. The answer can be found in the C++ standard (in the version I was reading) 1.10/10:</p>
+<blockquote>
+<p>&ldquo;Certain library calls synchronize with other library calls performed by another thread. For example, an atomic store-release synchronizes with a load-acquire that takes its value from the store (29.3). [ Note: Except in the specified cases, reading a later value does not necessarily ensure visibility as described below. Such a requirement would sometimes interfere with efficient implementation. — end note ]&rdquo;</p>
+</blockquote>
+<p>In other words, if one thread writes to m_data[0], and sets m_tail_2 to 1, and another thread writes to m_data[1], and sets m_tail_2 to 2, then if a reader thread observes m_tail_2 as 2, it is only guaranteed to see the data in m_data[1], not m_data[0].
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_017_hu3fe2e5a3cec9e81dc2eda86d2c35f4e6_1528189_1000x0_resize_box_3.png"/></p>
+<p>There is an exception to this though, and that is a release sequence - 1.10/9:</p>
+<blockquote>
+<p>&ldquo;A release sequence headed by a release operation A on an atomic object M is a maximal contiguous subsequence of side effects in the modification order of M, where the first operation is A, and every subsequent operation<br>
+(9.1) — is performed by the same thread that performed A, or<br>
+(9.2) — is an atomic read-modify-write operation.&rdquo;</p>
+</blockquote>
+<p>A release sequence is started by a release operation on an atomic object, and continues while operations on that atomic object are either performed in the same thread as the initial store, or are RMW operations. These RMW operations allow the side-effects of earlier writes to be visible even when loading later values, for example:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">dummy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// thread 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">dummy</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// thread 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">expected</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span><span class="p">(</span> <span class="o">!</span><span class="n">dummy</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">expected</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">expected</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">84</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">expected</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">dummy</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">expected</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acq_rel</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// thread 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">expected</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span><span class="p">(</span> <span class="o">!</span><span class="n">dummy</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">expected</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">expected</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// do something with data[0/1]
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The release sequence rule means that although thread 3 may only see the value 3 for the <code>dummy</code> variable, it will still see the correct value in <code>data[0]</code>. This is because after the initial store to <code>dummy</code> in thread 1, all the other modifications in thread 2 are RMW operations.</p>
+<p>Now, how much this matters, really depends on how much you care about the C++ standard. Personally, I don&rsquo;t care a whole lot. Any actual application that I would write is at present going to run on x86/64 hardware, and its strong memory model is quite forgiving. I decided to &ldquo;do it properly&rdquo; for two reasons, firstly if I&rsquo;m writing &ldquo;general purpose&rdquo; code and putting it up on GitHub, I feel some need to comply with the standard. Secondly, I was using relacy to test my code, and relacy will understandably treat this as an error.</p>
+<p>So I went ahead with trying to fix it. I wondered if I could use the release sequence rule to make sure all <code>try_enqueue</code> side effects were visible in <code>try_deque</code>. I couldn&rsquo;t think of a way of making all operations on <code>m_tail_2</code> in <code>try_dequeue</code> RMW operations, so I had to go back to the drawing board.</p>
+<p>To begin with I thought - no problem, just have each item in <code>m_data</code> be a struct, which has a bool, switch it to true after writing is complete, readers wait for it to be true, read the value, then switch back to false.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Item</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">T</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">ready</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// in enqueue
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span><span class="p">(</span> <span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">ready</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">ready</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// in dequeue
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span><span class="p">(</span> <span class="o">!</span><span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">ready</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="n">out_value</span> <span class="o">=</span> <span class="n">m_data</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">m_data</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">ready</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Simple, but still doesn&rsquo;t work. In the code for dequeue, if we load the <code>ready</code> part of the item and find the value to be true (i.e. ready to be read), we don&rsquo;t have a way of knowing whether we&rsquo;re reading the most recent value of true, or the value from a previous store.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_018_hu399e60ede800c7300780cf38757dc79d_1930714_1000x0_resize_box_3.png"/></p>
+<p>What&rsquo;s needed is an integer which is increased with every write. An obvious value to use for this, is the current tail value:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="struct%20Item%0a%7b%0a%09T%20value;%0a%09uint64_t%20version;%0a%7d;%0a%0a//%20enqueue%0am_data[tail%20%25%20size].value%20=%20value;%0am_data[tail%20%25%20size].version.store%28%20tail,%20std::memory_order_release%20%29;%0a%0a//%20dequeue%0awhile%28%20m_data[head%20%25%20size].version.load%28%20std::memory_order_acquire%20%29%20!=%20head%20%29%20%7b%7d%0aout_value%20=%20m_data[head%20%25%20size].value;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Item</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">T</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint64_t</span> <span class="n">version</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// enqueue
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">m_data</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">version</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">tail</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// dequeue
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span><span class="p">(</span> <span class="n">m_data</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">version</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="o">!=</span> <span class="n">head</span> <span class="p">)</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="n">out_value</span> <span class="o">=</span> <span class="n">m_data</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">size</span><span class="p">].</span><span class="n">value</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>If we&rsquo;re now using <code>version</code> to signal when the item is ready, then there&rsquo;s actually no point in the dual indexes. Previously, we&rsquo;d use <code>m_tail_1</code> to acquire our write index, and then use <code>m_tail_2</code> to signal to a reader thread that the item is ready. Now we can just have a single head and a single tail, use an RMW operation to claim our index, and use version to signal when reading/writing is complete.</p>
+<p>So if both <code>try_enqueue</code> and <code>try_dequeue</code> are going to be increasing <code>version</code>, what makes most sense is for <code>try_enqueue</code> to wait for <code>version</code> to equal <code>tail</code>. When it does, it writes its data, and then increments <code>version</code>. <code>Try_dequeue</code> on the other hand, will wait for <code>version</code> to equal <code>(head + 1)</code>, as this will be the value set by <code>try_enqueue</code> when writing was finished. When it is done reading the data, it sets <code>version</code> to <code>(head + capacity)</code>, this will be the value of <code>tail</code> when dequeue operations wrap back around to this same index in the buffer.
+
+
+
+    
+
+
+
+    
+
+<img src="/images/ditching_the_mutex/img_019_hu7c4524a5f1fcacf5c6e8a5e093e42698_3626830_1000x0_resize_box_3.png"/></p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20initial%20version%20values%0afor%28%20size_t%20i%20=%200;%20i%20%3c%20capacity;%20&#43;&#43;i%20%29%0a%7b%0a%09m_items[i].version%20=%20i;%0a%7d%0a%0abool%20try_enqueue%28%20const%20T&amp;%20value%20%29%0a%7b%0a%09uint64_t%20tail%20=%20m_tail.load%28%20std::memory_order_relaxed%20%29;%0a%0a%09if%28%20m_items[tail%20%25%20m_capacity].version.load%28%20std::memory_order_acquire%20%29%20!=%20tail%20%29%0a%09%7b%0a%09%09return%20false;%0a%09%7d%0a%0a%09if%28%20!m_tail.compare_exchange_strong%28%20tail,%20tail%20&#43;%201,%20std::memory_order_relaxed%20%29%20%29%0a%09%7b%0a%09%09return%20false;%0a%09%7d%0a%0a%09m_items[tail%20%25%20m_capacity].value%20=%20value;%0a%09m_items[tail%20%25%20m_capacity].version.store%28%20tail%20&#43;%201,%20std::memory_order_release%20%29;%0a%0a%09return%20true;%0a%7d%0a%0abool%20try_dequeue%28%20T&amp;%20out%20%29%0a%7b%0a%09uint64_t%20head%20=%20m_head.load%28%20std::memory_order_relaxed%20%29;%0a%0a%09if%28%20m_items[head%20%25%20m_capacity].version.load%28%20std::memory_order_acquire%20%29%20!=%20%28head%20&#43;%201%29%20%29%0a%09%7b%0a%09%09return%20false;%0a%09%7d%0a%0a%09if%28%20!m_head.compare_exchange_strong%28%20head,%20head%20&#43;%201,%20std::memory_order_relaxed%20%29%20%29%0a%09%7b%0a%09%09return%20false;%0a%09%7d%0a%0a%09out%20=%20m_items[head%20%25%20m_capacity].value;%0a%09m_items[head%20%25%20m_capacity].version.store%28%20head%20&#43;%20m_capacity,%20std::memory_order_release%20%29;%0a%0a%09return%20true;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="c1">// initial version values
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">for</span><span class="p">(</span> <span class="n">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">capacity</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_items</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">version</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_enqueue</span><span class="p">(</span> <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint64_t</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">m_tail</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">m_items</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">m_capacity</span><span class="p">].</span><span class="n">version</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="o">!=</span> <span class="n">tail</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_tail</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">tail</span><span class="p">,</span> <span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">m_items</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">m_capacity</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_items</span><span class="p">[</span><span class="n">tail</span> <span class="o">%</span> <span class="n">m_capacity</span><span class="p">].</span><span class="n">version</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">try_dequeue</span><span class="p">(</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">out</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint64_t</span> <span class="n">head</span> <span class="o">=</span> <span class="n">m_head</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="n">m_items</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">m_capacity</span><span class="p">].</span><span class="n">version</span><span class="p">.</span><span class="n">load</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span> <span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">m_head</span><span class="p">.</span><span class="n">compare_exchange_strong</span><span class="p">(</span> <span class="n">head</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span> <span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">out</span> <span class="o">=</span> <span class="n">m_items</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">m_capacity</span><span class="p">].</span><span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m_items</span><span class="p">[</span><span class="n">head</span> <span class="o">%</span> <span class="n">m_capacity</span><span class="p">].</span><span class="n">version</span><span class="p">.</span><span class="n">store</span><span class="p">(</span> <span class="n">head</span> <span class="o">+</span> <span class="n">m_capacity</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>This code is actually a fair bit simpler than with dual indexes, it also has the added bonus that readers/writers of index <code>(n + 1)</code> do not need to wait for the reader/writer at n to finish (whereas before, writers would have to wait in <code>try_enqueue</code> for <code>m_tail_2</code> to catch up before they&rsquo;d be able to increment it themselves). It still isn&rsquo;t lock free exactly, as a thread suspended in <code>try_enqueue</code> would eventually result in the queue being unusable when <code>head</code> caught up to <code>tail</code>.</p>
+<p>A very important final step is to have a think about false sharing. If two pieces of data are being written on different cores, it will seriously affect performance if they share a cache line. This is because each core (at least on the hardware in my machine) has its own L1 and L2 cache, and when one core writes to that cache line, the memory system will need to update the L1 and L2 caches in the other core. Keeping the caches in sync like this, comes at a cost to performance. The indexes in the queue will suffer from false sharing, as will the actual items. Let&rsquo;s have a go at fixing that next:</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nf">alignas</span><span class="p">(</span><span class="n">cache_line_size</span><span class="p">)</span><span class="n">Item</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span> <span class="n">version</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">T</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="nf">alignas</span><span class="p">(</span><span class="n">cache_line_size</span><span class="p">)</span><span class="nl">AlignedAtomicU64</span> <span class="p">:</span> <span class="k">public</span> <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;::</span><span class="n">atomic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Item</span><span class="o">*</span> <span class="n">m_items</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">AlignedAtomicU64</span> <span class="n">m_head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">AlignedAtomicU64</span> <span class="n">m_tail</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The <code>alignas</code> specifier is a C++11 feature, and is a standardised version of <code>__declspec( align( x ) )</code>. The <code>using</code> statement in <code>AlignedAtomicU64</code> allows the type to inherit all the constructors from <code>std::atomic&lt;uint64_t&gt;</code>. When allocating the array of items, due to the alignment requirements, it&rsquo;s important not to use <code>new</code> or <code>malloc</code>. On windows, the call needed is <code>_aligned_malloc</code>, as well as <code>_aligned_free</code> in the destructor. If you want to verify that the memory layout is looking correct, the memory window in Visual Studio is your friend.</p>
+<p>So that&rsquo;s it for my not quite lock free queue - so how does it perform? Under normal circumstances, pretty well, and much faster than just using a mutex. Not always though, in situations of high contention, it actually ends up being slower. Depending on the implementation of your mutex, if a thread can&rsquo;t acquire the mutex, it will be put to sleep. This allows other threads to get on with doing what they need to do.</p>
+<p>My queue on the other hand, can get into situations where for example, the queue is full, and all the producer threads keep spinning and attempting to add items. This is valuable time that ought to be spent running consumer threads, so that the queue would be able to clear out. For this reason in my tests I had reader/writer threads yield when their operation on the queue failed. I could&rsquo;ve put some code in <code>try_enqueue</code> and <code>try_dequeue</code> which would retry the operation a number of times, then sleep, or something like that. Ultimately though, I want to leave that up to the caller. If an operation fails, and the caller has other stuff they can do before trying again, then they should be able to.</p>
+<p>At the end of the day, the main thing is - keep contention to a minimum. If threads need to send a large number of messages to each-other, consider buffering them, and sending blocks of messages at a time. In future I&rsquo;d like to build a buffered queue which handles this automatically, and uses this one under the hood. Anyway, that&rsquo;s a job for future Joe - congratulations if you made it this far!</p>
+<p><a href="https://github.com/spectre1989/fast_mpmc_queue">Source code on GitHub</a></p>
+<p>Further reading: <a href="https://www.preshing.com/">preshing.com</a>, <a href="https://www.manning.com/books/c-plus-plus-concurrency-in-action">C++ Concurrency in Action</a>, <a href="https://www.youtube.com/watch?v=A8eCGOqgvH4">Atomic&lt;&gt; Weapons by Herb Sutter</a></p>
+
+            
+        </div>
+    </article>
+
+        </main>
+
+        <footer class="footer">
+    <div class="footer-left">
+        <ul class="social">
+            
+
+            
+                <li>Joe Best-Rotheray</li>
+            
+
+            
+                
+                    <li>
+                        
+                            <a href="mailto:joe@codersblock.org" target="_blank">
+                                <i class="bi-envelope"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="spectre1989" target="_blank">
+                                <i class="bi-github"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="joebestrotheray" target="_blank">
+                                <i class="bi-linkedin"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="codersblock" target="_blank">
+                                <i class="bi-twitter"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+    <div class="footer-right">
+        <ul class="control status clearfix">
+            
+                <li>
+                    
+                        Word Count:
+                        5899
+                    
+                </li>
+            
+
+            
+            
+
+            
+                <li>en</li>
+            
+
+            
+                <li>
+                    <a href="https://gohugo.io" class="btn" target="_blank"
+                        >Hugo: 0.121.2</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    <a
+                        href="https://github.com/JingWangTW/dark-theme-editor"
+                        class="btn"
+                        target="_blank"
+                        >Theme: dark-theme-editor</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    
+                        Last modified: &nbsp;
+                        <time>
+                            Jun 02 2016 00:00:00
+                        </time>
+                    
+                </li>
+            
+
+            
+                <li title="">
+                    
+                </li>
+            
+        </ul>
+    </div>
+</footer>
+
+    </body>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    <script
+        type="text/javascript"
+        src="/js/index_d751713.min.5eeb120f16ea146352725c420364f87befead45f678142b8f0ffbef024646931fbc06bff07a7bd6cb57fa2f8cd8a21ba6a4ee5a278ec32303a378bc1cd17f246.js"
+        integrity="sha512-XusSDxbqFGNSclxCA2T4e&#43;/q1F9ngUK48P&#43;&#43;8CRkaTH7wGv/B6e9bLV/ovjNiiG6ak7lonjsMjA6N4vBzRfyRg=="></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+
+
+
+</html>

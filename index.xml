@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Coder&#39;s Block</title>
+    <link>https://codersblock.org/</link>
+    <description>Recent content on Coder&#39;s Block</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 07 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://codersblock.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 8: Client-Side Prediction Revisited</title>
+      <link>https://codersblock.org/multiplayer-fps/part8/</link>
+      <pubDate>Fri, 07 Jun 2019 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part8/</guid>
+      <description>I was lucky enough to go to GDC 2018, and while there I had the pleasure of sitting down with Glenn Fiedler in a really rather swanky tea place. For those not already aware, Glenn is pretty much &amp;ldquo;the netcode guy&amp;rdquo;. If you’re looking on the web for information about netcode and network models, then you’ll almost certainly read some of his articles. They contain a lot more detail than most about the actual implementation of the ideas, you can watch all the GDC videos about networking that you like, at some point it’s great to see some actual code.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 7: The Vulkan Projection Matrix, and Other Graphics Things</title>
+      <link>https://codersblock.org/multiplayer-fps/part7/</link>
+      <pubDate>Wed, 29 May 2019 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part7/</guid>
+      <description>In the previous part of the series I mostly did some miscellaneous cleanup. This part unfortunately has no netcode whatsoever - it’s all about graphics (browse code here, it’s not pretty).&#xA;&amp;ldquo;You’re Not A Graphics Programmer, Stupid&amp;rdquo; I’m no graphics guy, but I’m hoping I can still make an acceptable renderer. I’m trying to take a from-scratch approach with this thing, and graphics will be no exception. This means I need to derive the most basic building blocks like projection and transformation matrices, armed only with my B grade in A-Level maths from more than a decade ago.</description>
+    </item>
+    <item>
+      <title>Client-Side Prediction With Physics In Unity</title>
+      <link>https://codersblock.org/posts/unity-client-side-prediction/</link>
+      <pubDate>Sat, 14 Apr 2018 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/posts/unity-client-side-prediction/</guid>
+      <description>TL;DR I made a demo showing how to do client-side prediction with physics-based player movement in Unity - GitHub.&#xA;UPDATE: Aran Koning submitted a pull request which improves upon the code in this article using even newer and shinier Unity features. By putting the client and the server cubes in different physics scenes, there’s no need to selectively disable one cube or the other, which causes issues with determinism.&#xA;Introduction Back in early 2012 I wrote a blog post about kind-of-but-not-really implementing client-side prediction of physics-based player movement in Unity.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 6: Cleanup</title>
+      <link>https://codersblock.org/multiplayer-fps/part6/</link>
+      <pubDate>Thu, 11 Jan 2018 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part6/</guid>
+      <description>In the previous part of this series, we added client-side prediction. At this point the codebase was getting a bit creaky with all the &amp;ldquo;todo&amp;rdquo; comments in the code, so I took a bit of time to address as many of them as possible (browse the code for this part here).&#xA;A Circular Buffer Utility Circular buffers are a great way to avoid dynamic allocation/deallocation, you can usually calculate how many items you&amp;rsquo;d need at maximum and just do a single allocation.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 5: Client-Side Prediction</title>
+      <link>https://codersblock.org/multiplayer-fps/part5/</link>
+      <pubDate>Sun, 31 Dec 2017 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part5/</guid>
+      <description>In the previous part of the series, we rebuilt the game client in C++. Now we crack on with the real reason we bothered to do that - client-side prediction. Currently the &amp;ldquo;game&amp;rdquo; only really works with close to no latency (i.e. client and server running on the same machine or network). Now is the time to introduce some artificial lag, dealing with that lag is really where netcode gets interesting.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 4: Rebuilding The Client in C&#43;&#43;</title>
+      <link>https://codersblock.org/multiplayer-fps/part4/</link>
+      <pubDate>Mon, 03 Jul 2017 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part4/</guid>
+      <description>In the previous part of this series we had an outline of an online game with a fixed tick rate, and support for multiple clients to connect and move around. In this part we bin the horrible client made in Unity, and implement one in C++. You can browse the repository at this stage of development here.&#xA;The reason I want to rebuild the client in C++ is that for upcoming work on client-side prediction, we&amp;rsquo;ll need the server and client to have a certain amount of shared code.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 3: Multiple Players</title>
+      <link>https://codersblock.org/multiplayer-fps/part3/</link>
+      <pubDate>Tue, 30 Aug 2016 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part3/</guid>
+      <description>In the previous part of this series we ended up with a basic outline of an online game with some very simple game logic, a fixed tick rate, and support for a single connected client. In this part, we&amp;rsquo;ll be adding support for multiple clients. You can see the repository as it was at this stage of development here.&#xA;The first thing we&amp;rsquo;ll need is to actually keep track of the clients who send the server packets.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 2: The Main Loop</title>
+      <link>https://codersblock.org/multiplayer-fps/part2/</link>
+      <pubDate>Sun, 21 Aug 2016 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part2/</guid>
+      <description>The previous part of this series was at best the &amp;ldquo;Hello, world!&amp;rdquo; stage of an online game. Now it&amp;rsquo;s time to actually start actually laying the groundwork.&#xA;The Input Loop Back in the day when multiplayer games were only played on a LAN, the clients would collect their user input, and send it to the server. The server would wait until it had the input from all clients, and then tick the game simulation, and send back the new game state.</description>
+    </item>
+    <item>
+      <title>Making a Multiplayer FPS in C&#43;&#43; Part 1: Hello Multiplayer World</title>
+      <link>https://codersblock.org/multiplayer-fps/part1/</link>
+      <pubDate>Sun, 14 Aug 2016 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/multiplayer-fps/part1/</guid>
+      <description>I write netcode because I love it. The problems that have to be solved in online games are particularly interesting to me - how to hide lag, how to replicate game state, how to compress data to save bandwidth, etc. I&amp;rsquo;ve spent most of my career working on multiplayer games of one sort or another - I built a couple of MMO clients at an indie startup, I was part of the online services team of Total War: Arena, and most recently I was on the network team for Halo Wars 2 DLC.</description>
+    </item>
+    <item>
+      <title>Ditching the Mutex</title>
+      <link>https://codersblock.org/posts/ditching-the-mutex/</link>
+      <pubDate>Thu, 02 Jun 2016 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/posts/ditching-the-mutex/</guid>
+      <description>TL;DR - I wrote a multiple-producer multiple-consumer queue without any mutexes, it&amp;rsquo;s pretty fast, GitHub.&#xA;About a year ago, a colleague was explaining why Erlang is so scalable, and it essentially comes down to a lack of shared memory. When you have two or more threads which share a section of memory, then whenever a thread is writing to that memory, no other threads can perform a read or write at the same time.</description>
+    </item>
+  </channel>
+</rss>

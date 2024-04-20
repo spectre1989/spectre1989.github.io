@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="generator" content="Hugo 0.121.2">
+
+    
+
+    
+
+    
+        
+            <meta
+                name="description"
+                content="Adventures in netcode, game engines, and game development" />
+        
+
+        
+            <meta
+                name="keywords"
+                content="netcode,programming,gamedev,c&#43;&#43;,unreal,UE5,unity,games,sockets" />
+        
+
+        
+            <meta
+                name="author"
+                content="Joe Best-Rotheray" />
+        
+
+    
+
+
+    <title>
+        
+            Making a Multiplayer FPS in C&#43;&#43; Part 5: Client-Side Prediction |
+            
+        
+    </title>
+
+    
+
+
+    
+    
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+    
+
+
+    
+    
+        
+            
+            
+        
+    
+
+    
+
+    
+
+        
+        
+
+
+        
+        
+
+
+        <link
+            rel="stylesheet"
+            href="/css/index_b09f3b5.min.981b5487040e8fce2ff189ee791909f986edaaa96533f9897e9d4d1098f144164fedf5c696cd286fd09c8ad2d28103cfb60098771aa1d69f6a896abe6a57329c.css"
+            integrity="sha512-mBtUhwQOj84v8YnueRkJ&#43;YbtqqllM/mJfp1NEJjxRBZP7fXGls0ob9CcitLSgQPPtgCYdxqh1p9qiWq&#43;alcynA==" />
+    
+
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+</head>
+
+
+
+    <body>
+        <header class="header">
+    <div class="header_left">
+        
+    </div>
+
+    <div class="header_middle">
+        
+            Making a Multiplayer FPS in C&#43;&#43; Part 5: Client-Side Prediction -
+            
+        
+    </div>
+</header>
+
+
+
+        <main>
+            <aside class="sidebar">
+    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li
+                    
+                        class="dir opened-dir"
+                    >
+                    <span class="dir-text"> Making a Multiplayer FPS in C&#43;&#43; </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part8/" title="./multiplayer-fps/part8/">
+                         Part 8: Client-Side Prediction Revisited 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part7/" title="./multiplayer-fps/part7/">
+                         Part 7: The Vulkan Projection Matrix 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part6/" title="./multiplayer-fps/part6/">
+                         Part 6: Cleanup 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part5/" title="./multiplayer-fps/part5/">
+                         Part 5: Client-Side Prediction 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part4/" title="./multiplayer-fps/part4/">
+                         Part 4: Rebuilding The Client in C&#43;&#43; 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part3/" title="./multiplayer-fps/part3/">
+                         Part 3: Multiple Players 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part2/" title="./multiplayer-fps/part2/">
+                         Part 2: The Main Loop 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part1/" title="./multiplayer-fps/part1/">
+                         Part 1: Hello Multiplayer World 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+            
+                <li
+                    
+                        class="dir closed-dir"
+                    >
+                    <span class="dir-text"> Posts </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/unity-client-side-prediction/" title="./posts/unity-client-side-prediction/">
+                         Client-Side Prediction With Physics In Unity 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/ditching-the-mutex/" title="./posts/ditching-the-mutex/">
+                         Ditching the Mutex 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+    </ul>
+
+
+</aside>
+<aside class="exapandable"></aside>
+
+
+            
+    <article class="main">
+        <button
+    class="sidebar-toggle-btn"
+    type="menu"
+    aria-expanded="false"
+    aria-haspopup="true">
+    <i class="bi bi-list"></i>
+</button>
+
+
+        
+            <div class="headerLogo">
+                <a href="https://codersblock.org/"><img src="https://codersblock.org/images/logo.png"/></a>
+            </div>
+        
+        <div class="title">
+            <h1 class="title-header">
+                Making a Multiplayer FPS in C&#43;&#43; Part 5: Client-Side Prediction
+            </h1>
+
+            <div class="author-date-readtime">
+                
+
+                    
+                        <div class="author" title="Author">
+                            <i class="bi bi-person"></i>
+                            <a
+                                href="/author/joe-best-rotheray/"
+                                class="cat-btn">
+                                Joe Best-Rotheray
+                            </a>
+                        </div>
+                    
+
+                
+
+                
+                    <div class="date" title="Date">
+                        <i class="bi bi-calendar3"></i>
+                        <time
+                            datetime="2017.12.31"
+                            >2017.12.31
+                        </time>
+                    </div>
+                
+
+                
+                    <div
+                        class="readtime"
+                        title="Time to Read">
+                        <i class="bi bi-clock"></i>
+                        12 mins to read
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="article-meta">
+            
+
+            
+
+            
+                <div class="breadcumb">
+                    <i class="bi bi-folder"></i>
+                    
+    
+    
+
+
+
+
+<a href="https://codersblock.org/" class="bread-btn">
+    
+        <i class="bi bi-house-fill"></i>
+    
+
+    
+        Home
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/multiplayer-fps/" class="bread-btn">
+    
+
+    
+        Making a Multiplayer FPS in C&#43;&#43;
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/multiplayer-fps/part5/" class="bread-btn">
+    
+
+    
+        Part 5: Client-Side Prediction
+    
+</a>
+
+                </div>
+            
+
+            
+        </div>
+
+        
+            
+
+        
+
+
+        <div class="content">
+            
+                <p>In the previous part of the series, we rebuilt the game client in C++. Now we crack on with the real reason we bothered to do that - <em><strong>client-side prediction</strong></em>. Currently the &ldquo;game&rdquo; only really works with close to no latency (i.e. client and server running on the same machine or network). Now is the time to introduce some artificial lag, <em>dealing</em> with that lag is really where netcode gets interesting.</p>
+<p>In the real world, packets sent over the internet are unpredictable. Sometimes they don&rsquo;t arrive at all (packet loss), sometimes they do arrive, and sometimes they can even be duplicated and arrive multiple times (though I&rsquo;ve never detected this actually happening, but it&rsquo;s important to know that it is possible and should probably be guarded against).</p>
+<p>Latency is also unpredictable, multiple packets from one machine to another do not necessarily (and in my experience, <em>rarely</em>) take the same amount of time to travel from A to B. This is referred to as jitter. Even when network conditions are stable, in a short space of time (a couple of seconds, say) there can be quite a difference between the quickest and slowest packet. This can result in packets arriving in a different order from which they were sent, or arriving in clumps.</p>
+<p>For now the fake lag I&rsquo;ll introduce is very rudimentary - there&rsquo;ll be predictable artificial latency added, but no packet loss or jitter just yet, though in time they&rsquo;ll be needed too. For now this is very simple, incoming/outgoing packets enter a buffer and stay there for however long the fake lag period is - I&rsquo;ve gone for a fairly absurd 200ms in both directions, so a 400ms round-trip time (RTT). Once this delay has expired, they can be retrieved with a call to <code>socket_receive</code> in the case of incoming packets, and outgoing packets are sent via the underlying Winsock socket.</p>
+<p>(You can see the code roughly where it was for this post <a href="https://github.com/spectre1989/odin/tree/28261d9e6d68385647efade2dbd5837d06faf055">here</a>, though there was a fair amount of overlap with the next article)</p>
+<p>The way I&rsquo;ve implemented this is to use the preprocessor symbol <code>FAKE_LAG</code> to insert extra code into builds which need the feature. In those builds, the original <code>Socket</code> struct (and all of the functions for manipulating it) is wrapped in a namespace called <code>Internal</code>, then another Socket struct is added which contains an <code>Internal::Socket</code>, along with buffers for sent and received packets. There&rsquo;s also a set of functions to work with them which match the interface of those for Socket, so it&rsquo;s just a case of turning fake lag on or off and it should just work without having to change anything else.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="cp">#ifdef FAKE_LAG
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">namespace</span> <span class="n">Internal</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">struct</span> <span class="nc">Socket</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">SOCKET</span> <span class="n">sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef FAKE_LAG
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Socket</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Internal</span><span class="o">::</span><span class="n">Socket</span> <span class="n">sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Packet_Buffer</span> <span class="n">send_buffer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Packet_Buffer</span> <span class="n">recv_buffer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The packet buffers are implemented just as a circular buffer, we know how big a packet can be (up to 1k), we know how many we send per second (60), and we know how much lag we&rsquo;ll have (200ms). This means we&rsquo;ll need a circular buffer of 12x1k buffers, but it&rsquo;s probably a good idea to have a couple spare just in case.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="constexpr%20uint32%20c_packet_buffer_size%20=%20%28c_ticks_per_second%20*%20c_fake_lag_s%29%20&#43;%202;%0astruct%20Packet_Buffer%0a%7b%0a%20%20%20uint8%20packets[c_packet_buffer_size][c_socket_buffer_size];%0a%20%20%20uint32%20packet_sizes[c_packet_buffer_size];%0a%20%20%20IP_Endpoint%20endpoints[c_packet_buffer_size];%0a%20%20%20Time%20times[c_packet_buffer_size];%0a%0a%20%20%20uint32%20head;%0a%20%20%20uint32%20tail;%0a%7d;%0a%0abool%20packet_buffer_push%28Packet_Buffer*%20packet_buffer,%20uint8*%20packet,%20uint32%20packet_size,%20IP_Endpoint*%20endpoint%29%0a%7b%0a%20%20%20if%20%28%28packet_buffer-%3etail%20-%20packet_buffer-%3ehead%29%20==%20c_packet_buffer_size%29%0a%20%20%20%7b%0a%20%20%20%20%20%20return%20false;%0a%20%20%20%7d%0a%0a%20%20%20uint32%20tail%20=%20packet_buffer-%3etail%20%25%20c_packet_buffer_size;%0a%20%20%20memcpy%28packet_buffer-%3epackets[tail],%20packet,%20packet_size%29;%0a%20%20%20packet_buffer-%3epacket_sizes[tail]%20=%20packet_size;%0a%20%20%20packet_buffer-%3eendpoints[tail]%20=%20*endpoint;%0a%20%20%20packet_buffer-%3etimes[tail]%20=%20time_now%28%29%20&#43;%20c_fake_lag_s;%0a%0a%20%20%20&#43;&#43;packet_buffer-%3etail;%20//%20note:%20this%20will%20take%20over%202%20years%20to%20overflow%0a%0a%20%20%20return%20true;%0a%7d%0a%0abool%20packet_buffer_pop%28Packet_Buffer*%20packet_buffer,%20uint8*%20out_packet,%20uint32*%20out_packet_size,%20IP_Endpoint*%20out_endpoint%29%0a%7b%0a%20%20%20if%20%28packet_buffer-%3ehead%20==%20packet_buffer-%3etail%29%0a%20%20%20%7b%0a%20%20%20%20%20%20return%20false;%0a%20%20%20%7d%0a%0a%20%20%20uint32%20head%20=%20packet_buffer-%3ehead%20%25%20c_packet_buffer_size;%0a%20%20%20if%20%28packet_buffer-%3etimes[head]%20%3c=%20time_now%28%29%29%0a%20%20%20%7b%0a%20%20%20%20%20%20memcpy%28out_packet,%20%0a%20%20%20%20%20%20%20%20%20packet_buffer-%3epackets[head],%20%0a%20%20%20%20%20%20%20%20%20packet_buffer-%3epacket_sizes[head]%29;%0a%20%20%20%20%20%20*out_packet_size%20=%20packet_buffer-%3epacket_sizes[head];%0a%20%20%20%20%20%20*out_endpoint%20=%20packet_buffer-%3eendpoints[head];%0a%0a%20%20%20%20%20%20&#43;&#43;packet_buffer-%3ehead;%0a%0a%20%20%20%20%20%20return%20true;%0a%20%20%20%7d%0a%0a%20%20%20return%20false;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="n">uint32</span> <span class="n">c_packet_buffer_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_ticks_per_second</span> <span class="o">*</span> <span class="n">c_fake_lag_s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">Packet_Buffer</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">uint8</span> <span class="n">packets</span><span class="p">[</span><span class="n">c_packet_buffer_size</span><span class="p">][</span><span class="n">c_socket_buffer_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">   <span class="n">uint32</span> <span class="n">packet_sizes</span><span class="p">[</span><span class="n">c_packet_buffer_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">   <span class="n">IP_Endpoint</span> <span class="n">endpoints</span><span class="p">[</span><span class="n">c_packet_buffer_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Time</span> <span class="n">times</span><span class="p">[</span><span class="n">c_packet_buffer_size</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">uint32</span> <span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">uint32</span> <span class="n">tail</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">packet_buffer_push</span><span class="p">(</span><span class="n">Packet_Buffer</span><span class="o">*</span> <span class="n">packet_buffer</span><span class="p">,</span> <span class="n">uint8</span><span class="o">*</span> <span class="n">packet</span><span class="p">,</span> <span class="n">uint32</span> <span class="n">packet_size</span><span class="p">,</span> <span class="n">IP_Endpoint</span><span class="o">*</span> <span class="n">endpoint</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">((</span><span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">-</span> <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">)</span> <span class="o">==</span> <span class="n">c_packet_buffer_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">uint32</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">%</span> <span class="n">c_packet_buffer_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">memcpy</span><span class="p">(</span><span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">packets</span><span class="p">[</span><span class="n">tail</span><span class="p">],</span> <span class="n">packet</span><span class="p">,</span> <span class="n">packet_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">packet_sizes</span><span class="p">[</span><span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">packet_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">endpoints</span><span class="p">[</span><span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="o">*</span><span class="n">endpoint</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">times</span><span class="p">[</span><span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_now</span><span class="p">()</span> <span class="o">+</span> <span class="n">c_fake_lag_s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="o">++</span><span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">;</span> <span class="c1">// note: this will take over 2 years to overflow
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">packet_buffer_pop</span><span class="p">(</span><span class="n">Packet_Buffer</span><span class="o">*</span> <span class="n">packet_buffer</span><span class="p">,</span> <span class="n">uint8</span><span class="o">*</span> <span class="n">out_packet</span><span class="p">,</span> <span class="n">uint32</span><span class="o">*</span> <span class="n">out_packet_size</span><span class="p">,</span> <span class="n">IP_Endpoint</span><span class="o">*</span> <span class="n">out_endpoint</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">head</span> <span class="o">==</span> <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">uint32</span> <span class="n">head</span> <span class="o">=</span> <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">head</span> <span class="o">%</span> <span class="n">c_packet_buffer_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">times</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">time_now</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">memcpy</span><span class="p">(</span><span class="n">out_packet</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">         <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">packets</span><span class="p">[</span><span class="n">head</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">         <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">packet_sizes</span><span class="p">[</span><span class="n">head</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">      <span class="o">*</span><span class="n">out_packet_size</span> <span class="o">=</span> <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">packet_sizes</span><span class="p">[</span><span class="n">head</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="o">*</span><span class="n">out_endpoint</span> <span class="o">=</span> <span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">endpoints</span><span class="p">[</span><span class="n">head</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">++</span><span class="n">packet_buffer</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Right now these are hardcoded in quite a rubbish way, but later this will be tidied up.</p>
+<p>With this fake lag activated, input feels sluggish as you&rsquo;d expect.</p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/anim001_hu199965293a0176ba77b2caf0f487e031_130020_1000x0_resize_box_1.gif"/>
+<sub>Square colour indicates what input is currently being pressed: White - up (increase speed) Red - down (decrease speed/stop) Blue - nothing<br>
+Square colour indicates what input is currently being pressed:<br>
+White - up (increase speed)<br>
+Red - down (decrease speed/stop)<br>
+Blue - nothing</sub></p>
+<p><em><strong>(The following section on handling of player inputs contains some mistakes, see <a href="../part8">here</a> for corrections)</strong></em></p>
+<p>Client-Side Prediction allows us to make input feel responsive, despite the lag. The client <em>predicts</em> the results of their input so the player sees the results instantly. They also maintain a historic buffer of inputs and their predicted results. When a state packet is received from the server, they compare the predicted results against the servers actual results. If the client&rsquo;s predicted results don&rsquo;t match, then a <em><strong>misprediction</strong></em> has occurred, and they replay the historic buffer from the corrected state, back up to the client&rsquo;s current predicted state. For the client to predict the results of their input, they need to run the same movement logic on the client as will run on the server - this is why it&rsquo;s helpful to have the server and client as part of a single codebase, hence rebuilding the client in C++ in the last part of the series.</p>
+<p>This means that effectively the client has to predict forwards in time relative to the other players they are observing, and this amount of time is proportional to their latency. If the client has a round-trip time to the server of 10 ticks, then they must run at least 10 ticks ahead of their last received state from server (and 5 ticks ahead of where the server is now, because the packet will take 5 ticks to get there). I think of this as 3 timestreams:</p>
+<ul>
+<li><em><strong>server time</strong></em> - the current time on the server (the client can only approximate what tick the server is currently on)</li>
+<li><em><strong>predicted time</strong></em> - the client&rsquo;s locally predicted time (server_time + (rtt * 0.5) + extra_for_jitter)</li>
+<li><em><strong>observed time</strong></em> - the stuff the client is observing rather than predicting (e.g. other players, AI characters, server-side physics objects, etc), and interpolates between snapshots of visual state (server_time - (rtt * 0.5) - extra_for_jitter_and_interpolation)</li>
+</ul>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img001_hue3a81a319a27477cc2e9045f1cae4102_83792_1000x0_resize_box_3.png"/>
+<sub>The client is predicting 5 ticks ahead of the server.<br>
+They send input for tick 50, it reaches the server 5 ticks later.<br>
+The server sends a state packet for tick 50 back to the client, which arrives when the client is predicting to tick 60.</sub></p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img002_hua16b9b74847023e6c47187318417d0e3_59836_1000x0_resize_box_3.png"/>
+<sub>The client has predicted up to tick 53.</sub></p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img003_hu6d670520fe8e631ab088b7748950f6bd_61801_1000x0_resize_box_3.png"/>
+<sub>A state packet is received from the server for tick 51, the client compares the local player state with what they predicted, they don&rsquo;t match, there has been a misprediction.</sub></p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img004_huaf443eed5f24428147fe323c0fa03f3e_55108_1000x0_resize_box_3.png"/>
+<sub>The client re-simulates the remaining predicted ticks.</sub></p>
+<p>I&rsquo;ve implemented the prediction history as another circular buffer. This buffer just needs to be big enough to allow for the highest round-trip time that we plan to support, I&rsquo;ve set this at 2 seconds for now, which will allow for a round-trip time of almost 4 seconds - much bigger than we&rsquo;d ever really need.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="Player_State%20local_player%20=%20%7b%7d;%0aconstexpr%20uint32%20c_max_predicted_ticks%20=%20c_ticks_per_second%20*%202;%0aPlayer_State%20prediction_history_state[c_max_predicted_ticks];%0aPlayer_Input%20prediction_history_input[c_max_predicted_ticks];%0auint32%20prediction_history_head%20=%200;%0auint32%20prediction_history_tail%20=%200;%0auint32%20prediction_history_head_tick_number%20=%200;%0a%0a//%20...%0a//%20on%20receiving%20a%20state%20packet,%20calculate%20where%20the%20client%20should%20be%20predicting%20to%0auint32%20ticks_to_predict%20=%20%28uint32%29%28estimated_rtt_s%20/%20c_seconds_per_tick%29;%0aticks_to_predict%20&#43;=%202;%20//%20add%20a%20little%20extra%20just%20in%20case%0atarget_tick_number%20=%20received_tick_number%20&#43;%20ticks_to_predict;%0a%0a//%20...%0a//%20prediction%20occurs%20during%20the%20game%20loop%0a//%20note:%20it%27s%20better%20to%20speed%20up/slow%20down%20the%20local%20player,%20rather%20than%20doing%20all%20the%20prediction%20in%20one%20go%0awhile%20%28tick_number%20%3c%20target_tick_number%29%0a%7b%0a%20%20%20prediction_history_state[prediction_history_tail]%20=%20local_player;%0a%20%20%20prediction_history_input[prediction_history_tail]%20=%20current_player_input;%0a%20%20%20prediction_history_tail%20=%20%28prediction_history_tail%20&#43;%201%29%20%25%20c_max_predicted_ticks;%0a%0a%20%20%20tick_player%28&amp;local_player,%20current_player_input%29;%0a%20%20%20&#43;&#43;tick_number;%0a%7d%0a&#43;&#43;target_tick_number;%0a%0a//%20...%0a//%20on%20receiving%20a%20state%20packet,%20check%20for%20and%20correct%20mispredictions%0auint32%20prediction_history_size%20=%20prediction_history_tail%20%3e%20prediction_history_head%20%0a%20%20%20?%20prediction_history_tail%20-%20prediction_history_head%20%0a%20%20%20:%20c_max_predicted_ticks%20-%20%28prediction_history_head%20-%20prediction_history_tail%29;%0a//%20it%20only%20occurs%20to%20me%20now%20that%20the%20code%20above%20will%20break%20if%20the%20buffer%20is%20ever%20full%0a//%20I%27ll%20fix%20that%20for%20the%20next%20installment!%0a%0awhile%20%28prediction_history_size%20&amp;&amp;%20%0a%20%20%20prediction_history_head_tick_number%20%3c%20received_tick_number%29%0a%7b%0a%20%20%20//%20discard%20this%20one,%20not%20needed%0a%20%20%20&#43;&#43;prediction_history_head_tick_number;%0a%20%20%20prediction_history_head%20=%20%28prediction_history_head%20&#43;%201%29%20%25%20c_max_predicted_ticks;%0a%20%20%20--prediction_history_size;%0a%7d%0a%0aif%20%28prediction_history_size%20&amp;&amp;%0a%20%20%20prediction_history_head_tick_number%20==%20received_tick_number%29%0a%7b%0a%20%20%20float32%20dx%20=%20prediction_history_state[prediction_history_head].x%20-%20received_local_player_state.x;%0a%20%20%20float32%20dy%20=%20prediction_history_state[prediction_history_head].y%20-%20received_local_player_state.y;%0a%20%20%20constexpr%20float32%20c_max_error%20=%200.01f;%0a%20%20%20constexpr%20float32%20c_max_error_sq%20=%20c_max_error%20*%20c_max_error;%0a%20%20%20float32%20error_sq%20=%20%28dx%20*%20dx%29%20&#43;%20%28dy%20*%20dy%29;%0a%20%20%20if%20%28error_sq%20%3e%20c_max_error_sq%29%0a%20%20%20%7b%0a%20%20%20%20%20%20log%28%22[client]error%20of%20%25f%20detected%20at%20tick%20%25d,%20rewinding%20and%20replaying%5cn%22,%20sqrtf%28error_sq%29,%20received_tick_number%29;%0a%0a%20%20%20%20%20%20local_player%20=%20received_local_player_state;%0a%20%20%20%20%20%20uint32%20i%20=%20prediction_history_head;%0a%20%20%20%20%20%20while%20%28true%29%0a%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20prediction_history_state[i]%20=%20*local_player;%0a%0a%20%20%20%20%20%20%20%20%20tick_player%28local_player,%20&amp;prediction_history_input[i]%29;%0a%0a%20%20%20%20%20%20%20%20%20i%20=%20%28i%20&#43;%201%29%20%25%20c_max_predicted_ticks;%0a%20%20%20%20%20%20%20%20%20if%20%28i%20==%20prediction_history_tail%29%0a%20%20%20%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20%20%20%20break;%0a%20%20%20%20%20%20%20%20%20%7d%0a%20%20%20%20%20%20%7d%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="n">Player_State</span> <span class="n">local_player</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="n">uint32</span> <span class="n">c_max_predicted_ticks</span> <span class="o">=</span> <span class="n">c_ticks_per_second</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Player_State</span> <span class="n">prediction_history_state</span><span class="p">[</span><span class="n">c_max_predicted_ticks</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">Player_Input</span> <span class="n">prediction_history_input</span><span class="p">[</span><span class="n">c_max_predicted_ticks</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint32</span> <span class="n">prediction_history_head</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint32</span> <span class="n">prediction_history_tail</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">uint32</span> <span class="n">prediction_history_head_tick_number</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// on receiving a state packet, calculate where the client should be predicting to
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">uint32</span> <span class="n">ticks_to_predict</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint32</span><span class="p">)(</span><span class="n">estimated_rtt_s</span> <span class="o">/</span> <span class="n">c_seconds_per_tick</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">ticks_to_predict</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// add a little extra just in case
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">target_tick_number</span> <span class="o">=</span> <span class="n">received_tick_number</span> <span class="o">+</span> <span class="n">ticks_to_predict</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// prediction occurs during the game loop
+</span></span></span><span class="line"><span class="cl"><span class="c1">// note: it&#39;s better to speed up/slow down the local player, rather than doing all the prediction in one go
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span> <span class="p">(</span><span class="n">tick_number</span> <span class="o">&lt;</span> <span class="n">target_tick_number</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">prediction_history_state</span><span class="p">[</span><span class="n">prediction_history_tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_player</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">prediction_history_input</span><span class="p">[</span><span class="n">prediction_history_tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_player_input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">prediction_history_tail</span> <span class="o">=</span> <span class="p">(</span><span class="n">prediction_history_tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">c_max_predicted_ticks</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">tick_player</span><span class="p">(</span><span class="o">&amp;</span><span class="n">local_player</span><span class="p">,</span> <span class="n">current_player_input</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">++</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">++</span><span class="n">target_tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// on receiving a state packet, check for and correct mispredictions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">uint32</span> <span class="n">prediction_history_size</span> <span class="o">=</span> <span class="n">prediction_history_tail</span> <span class="o">&gt;</span> <span class="n">prediction_history_head</span> 
+</span></span><span class="line"><span class="cl">   <span class="o">?</span> <span class="n">prediction_history_tail</span> <span class="o">-</span> <span class="nl">prediction_history_head</span> 
+</span></span><span class="line"><span class="cl">   <span class="p">:</span> <span class="n">c_max_predicted_ticks</span> <span class="o">-</span> <span class="p">(</span><span class="n">prediction_history_head</span> <span class="o">-</span> <span class="n">prediction_history_tail</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// it only occurs to me now that the code above will break if the buffer is ever full
+</span></span></span><span class="line"><span class="cl"><span class="c1">// I&#39;ll fix that for the next installment!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">prediction_history_size</span> <span class="o">&amp;&amp;</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">prediction_history_head_tick_number</span> <span class="o">&lt;</span> <span class="n">received_tick_number</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// discard this one, not needed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="o">++</span><span class="n">prediction_history_head_tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">prediction_history_head</span> <span class="o">=</span> <span class="p">(</span><span class="n">prediction_history_head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">c_max_predicted_ticks</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="o">--</span><span class="n">prediction_history_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">prediction_history_size</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">prediction_history_head_tick_number</span> <span class="o">==</span> <span class="n">received_tick_number</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">prediction_history_state</span><span class="p">[</span><span class="n">prediction_history_head</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">received_local_player_state</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">prediction_history_state</span><span class="p">[</span><span class="n">prediction_history_head</span><span class="p">].</span><span class="n">y</span> <span class="o">-</span> <span class="n">received_local_player_state</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">constexpr</span> <span class="n">float32</span> <span class="n">c_max_error</span> <span class="o">=</span> <span class="mf">0.01f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">constexpr</span> <span class="n">float32</span> <span class="n">c_max_error_sq</span> <span class="o">=</span> <span class="n">c_max_error</span> <span class="o">*</span> <span class="n">c_max_error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">float32</span> <span class="n">error_sq</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">dy</span> <span class="o">*</span> <span class="n">dy</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">error_sq</span> <span class="o">&gt;</span> <span class="n">c_max_error_sq</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">log</span><span class="p">(</span><span class="s">&#34;[client]error of %f detected at tick %d, rewinding and replaying</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sqrtf</span><span class="p">(</span><span class="n">error_sq</span><span class="p">),</span> <span class="n">received_tick_number</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">local_player</span> <span class="o">=</span> <span class="n">received_local_player_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">uint32</span> <span class="n">i</span> <span class="o">=</span> <span class="n">prediction_history_head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="n">prediction_history_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">*</span><span class="n">local_player</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="n">tick_player</span><span class="p">(</span><span class="n">local_player</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">prediction_history_input</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">c_max_predicted_ticks</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">prediction_history_tail</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>There&rsquo;s an important distinction to make with how you think of &ldquo;state at tick n&rdquo;, and that is whether you consider it to be the state at the beginning or end of the tick. Either is valid, but you have to be consistent. I choose to think of it as the state at the beginning of the tick, and the input for that tick is the input which occurs during that tick. So State<sub>n</sub> + Input<sub>n</sub> = State<sub>n+1</sub>.</p>
+<p>Correcting a misprediction introduces a problem - the client only receives <em>visual</em> state - that&rsquo;s what a <em><strong>snapshot</strong></em> means when talking about <em><strong>Snapshot Interpolation</strong></em> network models. In order to get back in sync with the server after a misprediction, the client really needs all the state which is relevant to the prediction. In our case we&rsquo;re predicting movement, so velocity is needed. In an FPS game we&rsquo;d need data related to shooting - what gun is the player holding, how many bullets do they have, when was the gun last fired, etc.</p>
+<p>We don&rsquo;t want to send this prediction-relevant data for all players though, bytes in each state packet from server to client is at a premium. Well, it isn&rsquo;t yet, but it will be. The solution is simple but involves a bit more work on the server - each player receives a bespoke state packet. In that packet they receive their own, fuller set of prediction-relevant state, followed by a series of visual state for all the other players.</p>
+
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img005_hu0824dbeb938a01a58092ad6832a6bbd8_108529_1000x0_resize_box_3.png"/>
+<p>The final piece of this particular puzzle, is input buffering on the server. When the client predicts forward, they do so such that their input for a given tick, arrives at the server just in time for it to be used.</p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img006_hue647dc4816d77b903dc60c8aa24224ec_73267_1000x0_resize_box_3.png"/>
+<sub>How we wish packets behaved.</sub></p>
+<p>In reality, because of our best friend - jitter - sometimes an input arrives just in time, sometimes it&rsquo;s late, sometimes it never shows up, and sometimes it&rsquo;s 2 or 3 ticks early.</p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img007_hu7c23713c5ee2d43b43d42d9ee44ba923_76119_1000x0_resize_box_3.png"/>
+<sub>How packets actually behave.</sub></p>
+<p>To deal with this, the server has a buffer for each client, to store early inputs so that they can be used later. The size of this buffer is proportional to how much jitter we plan to allow. Looking at the code now, I&rsquo;ve chosen a whole second, which is absurdly large in terms of time, but the memory usage is still negligible so I&rsquo;ll leave that as it is for now.</p>
+<p>Note that in the past the client just sent an input packet to the server, and the server just took whatever the most recent input was that it had from the client, and used that when ticking the simulation. Now that we have prediction, we really care about what tick a particular input packet was meant for, so that will need to now be part of the input packet.</p>
+<p>
+
+
+    
+
+
+
+    
+
+<img src="/images/mpfps_05/img008_hub190212258fe6a74b220a4fbd20fcbbc_66845_1000x0_resize_box_3.png"/>
+<sub>New input packet layout.</sub></p>
+<p>Initially I thought of implementing input buffering as a circular buffer of queues. Each future tick gets a queue of input packets, and when the server receives an input packet from a client, it adds it to the queue of inputs for that tick. When the server is about to tick the simulation, it runs over the input queue for that tick, for each item in the queue it copies the input data over the inputs used for that player for the previous tick. Any player who didn&rsquo;t get their input to the server in time, just carries on with their input from the last tick, it&rsquo;ll probably just result in a slight misprediction which will be corrected soon.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20...%0a//%20on%20receiving%20an%20input%20packet%0ainput_queues[received_input_tick][tail]%20=%20Buffered_Input%28received_input,%20from_player%29;%0a%0a//%20...%0a//%20before%20starting%20each%20tick%0aforeach%20%28Buffered_Input%20buffered_input%20:%20input_queues[tick]%29%0a%7b%0a%20%20%20player_inputs[buffered_input.player]%20=%20buffered_input.input;%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// on receiving an input packet
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">input_queues</span><span class="p">[</span><span class="n">received_input_tick</span><span class="p">][</span><span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">Buffered_Input</span><span class="p">(</span><span class="n">received_input</span><span class="p">,</span> <span class="n">from_player</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// before starting each tick
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">foreach</span> <span class="p">(</span><span class="n">Buffered_Input</span> <span class="nl">buffered_input</span> <span class="p">:</span> <span class="n">input_queues</span><span class="p">[</span><span class="n">tick</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">player_inputs</span><span class="p">[</span><span class="n">buffered_input</span><span class="p">.</span><span class="n">player</span><span class="p">]</span> <span class="o">=</span> <span class="n">buffered_input</span><span class="p">.</span><span class="n">input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The problem with this, is that it assumes we&rsquo;ll only get one input per-client. Packet duplication is rare, so it wouldn&rsquo;t cause a significant hit to CPU or memory usage to have the very occasional duplicate input packet. However, what if a hacker started sending malicious packets to clog up the server? We&rsquo;d need a way of checking if we already have input from this particular client for this particular tick. If we&rsquo;re going to do that sort of checking, then we may as well just have an array per tick, of user inputs, with the player ID as the index. Well, we&rsquo;ll actually need two arrays, an input array, and an array of bools using the same index, and meaning &ldquo;did I get anything from this client&rdquo;. This is because a &ldquo;zero&rdquo; input is entirely valid, the player could be holding no keys down at all, so we need this second array to allow for the concept of a &ldquo;null&rdquo; input, when we never got an input from this player at all.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20...%0a//%20on%20receiving%20an%20input%20packet%0abuffered_inputs[received_input_tick][from_player]%20=%20received_input;%0abuffered_inputs_test[received_input_tick][from_player]%20=%20true;%0a%0a//%20...%0a//%20before%20starting%20each%20tick%0afor%20%28int%20i%20=%200;%20i%20%3c%20num_players;%20&#43;&#43;i%29%0a%7b%0a%20%20%20if%20%28buffered_inputs_test[tick][i]%29%0a%20%20%20%7b%0a%20%20%20%20%20%20player_inputs[i]%20=%20buffered_inputs[tick][i];%0a%20%20%20%7d%0a%7d%20">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// on receiving an input packet
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">buffered_inputs</span><span class="p">[</span><span class="n">received_input_tick</span><span class="p">][</span><span class="n">from_player</span><span class="p">]</span> <span class="o">=</span> <span class="n">received_input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">buffered_inputs_test</span><span class="p">[</span><span class="n">received_input_tick</span><span class="p">][</span><span class="n">from_player</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// before starting each tick
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_players</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">buffered_inputs_test</span><span class="p">[</span><span class="n">tick</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">player_inputs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">buffered_inputs</span><span class="p">[</span><span class="n">tick</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>That&rsquo;s it for now for client-side prediction, though I&rsquo;ll certainly return to this to tighten a few things up. Enjoy 2018 everyone.</p>
+
+            
+        </div>
+    </article>
+
+        </main>
+
+        <footer class="footer">
+    <div class="footer-left">
+        <ul class="social">
+            
+
+            
+                <li>Joe Best-Rotheray</li>
+            
+
+            
+                
+                    <li>
+                        
+                            <a href="mailto:joe@codersblock.org" target="_blank">
+                                <i class="bi-envelope"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="spectre1989" target="_blank">
+                                <i class="bi-github"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="joebestrotheray" target="_blank">
+                                <i class="bi-linkedin"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="codersblock" target="_blank">
+                                <i class="bi-twitter"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+    <div class="footer-right">
+        <ul class="control status clearfix">
+            
+                <li>
+                    
+                        Word Count:
+                        2503
+                    
+                </li>
+            
+
+            
+            
+
+            
+                <li>en</li>
+            
+
+            
+                <li>
+                    <a href="https://gohugo.io" class="btn" target="_blank"
+                        >Hugo: 0.121.2</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    <a
+                        href="https://github.com/JingWangTW/dark-theme-editor"
+                        class="btn"
+                        target="_blank"
+                        >Theme: dark-theme-editor</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    
+                        Last modified: &nbsp;
+                        <time>
+                            Dec 31 2017 00:00:00
+                        </time>
+                    
+                </li>
+            
+
+            
+                <li title="">
+                    
+                </li>
+            
+        </ul>
+    </div>
+</footer>
+
+    </body>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    <script
+        type="text/javascript"
+        src="/js/index_d751713.min.5eeb120f16ea146352725c420364f87befead45f678142b8f0ffbef024646931fbc06bff07a7bd6cb57fa2f8cd8a21ba6a4ee5a278ec32303a378bc1cd17f246.js"
+        integrity="sha512-XusSDxbqFGNSclxCA2T4e&#43;/q1F9ngUK48P&#43;&#43;8CRkaTH7wGv/B6e9bLV/ovjNiiG6ak7lonjsMjA6N4vBzRfyRg=="></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+
+
+
+</html>

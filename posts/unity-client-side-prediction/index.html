@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="generator" content="Hugo 0.121.2">
+
+    
+
+    
+
+    
+        
+            <meta
+                name="description"
+                content="Adventures in netcode, game engines, and game development" />
+        
+
+        
+            <meta
+                name="keywords"
+                content="netcode,programming,gamedev,c&#43;&#43;,unreal,UE5,unity,games,sockets" />
+        
+
+        
+            <meta
+                name="author"
+                content="Joe Best-Rotheray" />
+        
+
+    
+
+
+    <title>
+        
+            Client-Side Prediction With Physics In Unity |
+            
+        
+    </title>
+
+    
+
+
+    
+    
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+    
+
+
+    
+    
+        
+            
+            
+        
+    
+
+    
+
+    
+
+        
+        
+
+
+        
+        
+
+
+        <link
+            rel="stylesheet"
+            href="/css/index_b09f3b5.min.981b5487040e8fce2ff189ee791909f986edaaa96533f9897e9d4d1098f144164fedf5c696cd286fd09c8ad2d28103cfb60098771aa1d69f6a896abe6a57329c.css"
+            integrity="sha512-mBtUhwQOj84v8YnueRkJ&#43;YbtqqllM/mJfp1NEJjxRBZP7fXGls0ob9CcitLSgQPPtgCYdxqh1p9qiWq&#43;alcynA==" />
+    
+
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+</head>
+
+
+
+    <body>
+        <header class="header">
+    <div class="header_left">
+        
+    </div>
+
+    <div class="header_middle">
+        
+            Client-Side Prediction With Physics In Unity -
+            
+        
+    </div>
+</header>
+
+
+
+        <main>
+            <aside class="sidebar">
+    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li
+                    
+                        class="dir closed-dir"
+                    >
+                    <span class="dir-text"> Making a Multiplayer FPS in C&#43;&#43; </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part8/" title="./multiplayer-fps/part8/">
+                         Part 8: Client-Side Prediction Revisited 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part7/" title="./multiplayer-fps/part7/">
+                         Part 7: The Vulkan Projection Matrix 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part6/" title="./multiplayer-fps/part6/">
+                         Part 6: Cleanup 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part5/" title="./multiplayer-fps/part5/">
+                         Part 5: Client-Side Prediction 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part4/" title="./multiplayer-fps/part4/">
+                         Part 4: Rebuilding The Client in C&#43;&#43; 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part3/" title="./multiplayer-fps/part3/">
+                         Part 3: Multiple Players 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part2/" title="./multiplayer-fps/part2/">
+                         Part 2: The Main Loop 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/multiplayer-fps/part1/" title="./multiplayer-fps/part1/">
+                         Part 1: Hello Multiplayer World 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+            
+                <li
+                    
+                        class="dir opened-dir"
+                    >
+                    <span class="dir-text"> Posts </span>
+
+                    
+
+
+
+    
+    
+
+    
+    
+
+
+    <ul class="section-tree">
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/unity-client-side-prediction/" title="./posts/unity-client-side-prediction/">
+                         Client-Side Prediction With Physics In Unity 
+                    </a>
+                </li>
+            
+        
+            
+                <li class="file">
+                    <a href="https://codersblock.org/posts/ditching-the-mutex/" title="./posts/ditching-the-mutex/">
+                         Ditching the Mutex 
+                    </a>
+                </li>
+            
+        
+    </ul>
+
+
+                </li>
+            
+        
+    </ul>
+
+
+</aside>
+<aside class="exapandable"></aside>
+
+
+            
+    <article class="main">
+        <button
+    class="sidebar-toggle-btn"
+    type="menu"
+    aria-expanded="false"
+    aria-haspopup="true">
+    <i class="bi bi-list"></i>
+</button>
+
+
+        
+            <div class="headerLogo">
+                <a href="https://codersblock.org/"><img src="https://codersblock.org/images/logo.png"/></a>
+            </div>
+        
+        <div class="title">
+            <h1 class="title-header">
+                Client-Side Prediction With Physics In Unity
+            </h1>
+
+            <div class="author-date-readtime">
+                
+
+                    
+                        <div class="author" title="Author">
+                            <i class="bi bi-person"></i>
+                            <a
+                                href="/author/joe-best-rotheray/"
+                                class="cat-btn">
+                                Joe Best-Rotheray
+                            </a>
+                        </div>
+                    
+
+                
+
+                
+                    <div class="date" title="Date">
+                        <i class="bi bi-calendar3"></i>
+                        <time
+                            datetime="2018.04.14"
+                            >2018.04.14
+                        </time>
+                    </div>
+                
+
+                
+                    <div
+                        class="readtime"
+                        title="Time to Read">
+                        <i class="bi bi-clock"></i>
+                        15 mins to read
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="article-meta">
+            
+
+            
+
+            
+                <div class="breadcumb">
+                    <i class="bi bi-folder"></i>
+                    
+    
+    
+
+
+
+
+<a href="https://codersblock.org/" class="bread-btn">
+    
+        <i class="bi bi-house-fill"></i>
+    
+
+    
+        Home
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/posts/" class="bread-btn">
+    
+
+    
+        Posts
+    
+</a>
+
+
+
+
+    /
+
+
+
+<a href="https://codersblock.org/posts/unity-client-side-prediction/" class="bread-btn">
+    
+
+    
+        Client-Side Prediction With Physics In Unity
+    
+</a>
+
+                </div>
+            
+
+            
+        </div>
+
+        
+            
+
+        
+
+
+        <div class="content">
+            
+                <h3 id="tldr">TL;DR</h3>
+<p>I made a demo showing how to do client-side prediction with physics-based player movement in Unity - <a href="https://github.com/spectre1989/unity_physics_csp">GitHub</a>.</p>
+<h3 id="update">UPDATE:</h3>
+<p><a href="http://www.aran-koning.com/">Aran Koning</a> submitted a pull request which improves upon the code in this article using even newer and shinier Unity features. By putting the client and the server cubes in different physics scenes, there’s no need to selectively disable one cube or the other, which causes issues with determinism.</p>
+<h3 id="introduction">Introduction</h3>
+<p>Back in early 2012 I wrote a blog post about kind-of-but-not-really implementing client-side prediction of physics-based player movement in Unity. That nasty workaround that I described, is no longer necessary thanks to <a href="https://docs.unity3d.com/ScriptReference/Physics.Simulate.html">Physics.Simulate()</a>. That old post is still one of the most popular posts on here, but with Unity today, that information is just sort of wrong. So here goes, the 2018 edition.</p>
+<h3 id="client-side-what">Client-Side What?</h3>
+<p>In a competitive multiplayer game, you want to avoid cheating as much as you can. Usually that means a server-authoritative network model, where clients send their input to the server, and the server turns that input into player movement, and sends a snapshot of the resulting player state back to the client. This causes a delay between pressing a key, and seeing the results, which feels unacceptably laggy for any kind of action game. Client-Side Prediction is a very common technique which hides this lag by predicting what the resulting movement will be, and showing it straight away. When the client receives the results from the server, it compares with what the client predicted, if they are different there has been a misprediction, and it corrects the predicted state.</p>
+<p>The snapshots received from the server always arrive in the past, relative to the clients predicted state (i.e. if the round-trip from client to server and back, is 150ms, then each snapshot will be at least 150ms in the past). As a result of this, when the client needs to correct a misprediction, it must rewind to this point in the past, and then replay through all of the inputs in-between to get back up to where it was. If player movement in your game is physics-based, then that&rsquo;s why <code>Physics.Simulate()</code> is needed - to simulate multiple ticks in a single frame. If your player movement instead just uses Character Controllers (or a capsule cast, etc) then you should be fine without <code>Physics.Simulate()</code> - and I suspect performance would be better.</p>
+<p>I&rsquo;ll be using Unity to attempt to recreate a networking demo I really liked from a while back, called <a href="https://code.google.com/archive/p/gamephysics/downloads">&ldquo;Zen of Networked Physics&rdquo;</a> by <a href="https://gafferongames.com/">Glenn Fiedler</a>. The player has a physics cube which they can apply forces to, pushing it around, and the demo simulates various network conditions like latency and packet loss.</p>
+<h3 id="getting-started">Getting Started</h3>
+<p>The first thing to do is disable auto physics simulation. Though <code>Physics.Simulate()</code> allows us to tell the physics system when to simulate, by default it will simulate automatically based on the project&rsquo;s fixed delta time. So we&rsquo;ll want to disable that in <em><strong>Edit-&gt;Project Settings-&gt;Physics</strong></em>, untick &ldquo;<em><strong>Auto Simulation</strong></em>&rdquo;.</p>
+<p>To begin, we&rsquo;ll do a simple single-player implementation. Input is sampled (w, a, s, d, and space to jump), and this is turned in to simple forces which are applied to the Rigidbody with <code>AddForce()</code>.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="#ZgotmplZ">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">Logic</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="kd">public</span> <span class="n">GameObject</span> <span class="n">player</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="kd">private</span> <span class="kt">float</span> <span class="n">timer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="kd">private</span> <span class="k">void</span> <span class="n">Start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">=</span> <span class="m">0.0f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="kd">private</span> <span class="k">void</span> <span class="n">Update</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">+=</span> <span class="n">Time</span><span class="p">.</span><span class="n">deltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">&gt;=</span> <span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">-=</span> <span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="n">Inputs</span> <span class="n">inputs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">inputs</span><span class="p">.</span><span class="n">up</span> <span class="p">=</span> <span class="n">Input</span><span class="p">.</span><span class="n">GetKey</span><span class="p">(</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">W</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">         <span class="n">inputs</span><span class="p">.</span><span class="n">down</span> <span class="p">=</span> <span class="n">Input</span><span class="p">.</span><span class="n">GetKey</span><span class="p">(</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">S</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">         <span class="n">inputs</span><span class="p">.</span><span class="n">left</span> <span class="p">=</span> <span class="n">Input</span><span class="p">.</span><span class="n">GetKey</span><span class="p">(</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">A</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">         <span class="n">inputs</span><span class="p">.</span><span class="n">right</span> <span class="p">=</span> <span class="n">Input</span><span class="p">.</span><span class="n">GetKey</span><span class="p">(</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">D</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">         <span class="n">inputs</span><span class="p">.</span><span class="n">jump</span> <span class="p">=</span> <span class="n">Input</span><span class="p">.</span><span class="n">GetKey</span><span class="p">(</span><span class="n">KeyCode</span><span class="p">.</span><span class="n">Space</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;(),</span> <span class="n">inputs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/BbC-MQX08KE" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<h3 id="sending-input-to-the-server">Sending Input To The Server</h3>
+<p>Now we need to send the input to the server, where it will also execute this movement code, take a snapshot of the cube state, and send it back to the client.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20client%0aprivate%20void%20Update%28%29%0a%7b%0a%20%20%20this.timer%20&#43;=%20Time.deltaTime;%0a%20%20%20while%20%28this.timer%20%3e=%20Time.fixedDeltaTime%29%0a%20%20%20%7b%0a%20%20%20%20%20%20this.timer%20-=%20Time.fixedDeltaTime;%0a%20%20%20%20%20%20Inputs%20inputs%20=%20this.SampleInputs%28%29;%0a%0a%20%20%20%20%20%20InputMessage%20input_msg;%0a%20%20%20%20%20%20input_msg.inputs%20=%20inputs;%0a%20%20%20%20%20%20input_msg.tick_number%20=%20this.tick_number;%0a%20%20%20%20%20%20this.SendToServer%28input_msg%29;%0a%0a%20%20%20%20%20%20this.AddForcesToPlayer%28player.GetComponent%3cRigidbody%3e%28%29,%20inputs%29;%0a%0a%20%20%20%20%20%20Physics.Simulate%28Time.fixedDeltaTime%29;%0a%0a%20%20%20%20%20%20&#43;&#43;this.tick_number;%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">// client</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="k">void</span> <span class="n">Update</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">+=</span> <span class="n">Time</span><span class="p">.</span><span class="n">deltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">&gt;=</span> <span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">-=</span> <span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Inputs</span> <span class="n">inputs</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">SampleInputs</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">InputMessage</span> <span class="n">input_msg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span> <span class="p">=</span> <span class="n">inputs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">input_msg</span><span class="p">.</span><span class="n">tick_number</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">SendToServer</span><span class="p">(</span><span class="n">input_msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;(),</span> <span class="n">inputs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">++</span><span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Nothing special here, the only thing I will call out is the addition of the tick_number variable. This is here so that when the server sends snapshots of cube state back to the client, we can figure out what client tick that state corresponds with, so we can compare that state against what the client predicted (that&rsquo;ll come a bit later).</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20server%0aprivate%20void%20Update%28%29%0a%7b%0a%20%20%20while%20%28this.HasAvailableInputMessages%28%29%29%0a%20%20%20%7b%0a%20%20%20%20%20%20InputMessage%20input_msg%20=%20this.GetInputMessage%28%29;%0a%0a%20%20%20%20%20%20Rigidbody%20rigidbody%20=%20player.GetComponent%3cRigidbody%3e%28%29;%0a%20%20%20%20%20%20this.AddForcesToPlayer%28rigidbody,%20input_msg.inputs%29;%0a%0a%20%20%20%20%20%20Physics.Simulate%28Time.fixedDeltaTime%29;%0a%0a%20%20%20%20%20%20StateMessage%20state_msg;%0a%20%20%20%20%20%20state_msg.position%20=%20rigidbody.position;%0a%20%20%20%20%20%20state_msg.rotation%20=%20rigidbody.rotation;%0a%20%20%20%20%20%20state_msg.velocity%20=%20rigidbody.velocity;%0a%20%20%20%20%20%20state_msg.angular_velocity%20=%20rigidbody.angularVelocity;%0a%20%20%20%20%20%20state_msg.tick_number%20=%20input_msg.tick_number%20&#43;%201;%0a%20%20%20%20%20%20this.SendToClient%28state_msg%29;%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">// server</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="k">void</span> <span class="n">Update</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">HasAvailableInputMessages</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">InputMessage</span> <span class="n">input_msg</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetInputMessage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">Rigidbody</span> <span class="n">rigidbody</span> <span class="p">=</span> <span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">rigidbody</span><span class="p">,</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">StateMessage</span> <span class="n">state_msg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">state_msg</span><span class="p">.</span><span class="n">position</span> <span class="p">=</span> <span class="n">rigidbody</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">state_msg</span><span class="p">.</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">rigidbody</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">state_msg</span><span class="p">.</span><span class="n">velocity</span> <span class="p">=</span> <span class="n">rigidbody</span><span class="p">.</span><span class="n">velocity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">state_msg</span><span class="p">.</span><span class="n">angular_velocity</span> <span class="p">=</span> <span class="n">rigidbody</span><span class="p">.</span><span class="n">angularVelocity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">state_msg</span><span class="p">.</span><span class="n">tick_number</span> <span class="p">=</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">tick_number</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">SendToClient</span><span class="p">(</span><span class="n">state_msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The server just waits for input messages, whenever it gets one, it simulates a tick, simple. It then takes a snapshot of the resulting cube state, and sends it back to the client. You might notice that the tick_number in the state message is one greater than the tick_number in the input message. This is because I personally find it most intuitive to think of &ldquo;the state of the player at tick 100&rdquo; to be &ldquo;the state of the player at <em><strong>the beginning</strong></em> of tick 100&rdquo;. Therefore the state for the player at tick 100, combined with the input from the player at tick 100, produces the new state for the player at tick 101.</p>
+<p>State<sub>n</sub> + Input<sub>n</sub> = State<sub>n+1</sub></p>
+<p>I&rsquo;m not saying everyone should think of it that way, consistency is all that matters.</p>
+<p>I should also mention that I&rsquo;m not <em>really</em> sending these messages over a real socket, I&rsquo;m faking it by putting them into queues, and simulating some latency and packet loss. The scene contains two physics cubes - one for the client, and one for the server. When updating the client cube, I disable the server cube GameObject, and vice versa.</p>
+<p>I&rsquo;m not however, simulating any network jitter or out-of-order packet delivery, so that&rsquo;s why I&rsquo;m making an assumption that every input message which arrives is newer than the last. The reason for this fakery is mainly that it allows us to run the &ldquo;client&rdquo; and &ldquo;server&rdquo; in the same instance of Unity very easily, so we can composite the client and server cubes into the same scene.</p>
+<p>You might also notice that if an input message gets dropped and doesn&rsquo;t reach the server, that results in the server simulating a smaller number of ticks than the client, and will therefore produce different state. That&rsquo;s true, but even if we were to simulate the gaps, the inputs might be wrong anyway - also resulting in different state. This is an issue we&rsquo;ll deal with later.</p>
+<p>I&rsquo;ll also point out that this example only has one client which simplifies things, if you had multiple clients then you&rsquo;d need to either a) make sure you only had one player cube enabled on the server when calling <code>Physics.Simulate()</code> or b) if the server has received input for multiple cubes, simulate them all together.</p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/OUwWzUxZao0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>75ms latency (150ms round-trip)
+0% packet loss<br>
+Yellow cube - server player<br>
+Blue cube - last received snapshot on client</sub></p>
+<p>Looks pretty good so far, but I&rsquo;ve been a bit selective with what I captured in order to hide quite a big problem.</p>
+<h3 id="determinism-fail">Determinism Fail</h3>
+<p>Have a look at this instead:
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/7jbKgyUwnd4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>Uh oh..</sub></p>
+<p>That was captured with no packet loss, yet the simulations still diverge with exactly the same inputs. I&rsquo;m not exactly sure why this happens - PhysX is supposed to be reasonably deterministic so I do find it surprising that the simulations diverge so often. It could be related to how I&rsquo;m toggling the cube GameObjects on and off all the time, and therefore perhaps this would be much less of a problem with two separate instances of Unity. It could also be a bug, if you can spot it in the code on GitHub then let me know.</p>
+<p>In any case, mispredictions are a fact of life with client-side prediction, so now lets deal with them.</p>
+<h3 id="can-i-get-a-rewind">Can I Get A Rewind?</h3>
+<p>The process is pretty simple - when the client predicts movement, it stores a buffer of state (position and rotation) and inputs. When a state message is received from the server, it compares the received state with the predicted state in the buffer. If they&rsquo;re different by too large a margin, then override the client cube state in the past, and then re-simulate all of the ticks in-between.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="//%20client%0aprivate%20ClientState[]%20client_state_buffer%20=%20new%20ClientState[1024];%0aprivate%20Inputs[]%20client_input_buffer%20=%20new%20Inputs[1024];%0a%0aprivate%20void%20Update%28%29%0a%7b%0a%20%20%20this.timer%20&#43;=%20Time.deltaTime;%0a%20%20%20while%20%28this.timer%20%3e=%20Time.fixedDeltaTime%29%0a%20%20%20%7b%0a%20%20%20%20%20%20this.timer%20-=%20Time.fixedDeltaTime;%0a%20%20%20%20%20%20Inputs%20inputs%20=%20this.SampleInputs%28%29;%0a%0a%20%20%20%20%20%20InputMessage%20input_msg;%0a%20%20%20%20%20%20input_msg.inputs%20=%20inputs;%0a%20%20%20%20%20%20input_msg.tick_number%20=%20this.tick_number;%0a%20%20%20%20%20%20this.SendToServer%28input_msg%29;%0a%0a%20%20%20%20%20%20uint%20buffer_slot%20=%20this.tick_number%20%25%201024;%0a%20%20%20%20%20%20this.client_input_buffer[buffer_slot]%20=%20inputs;%0a%20%20%20%20%20%20this.client_state_buffer[buffer_slot].position%20=%20rigidbody.position;%0a%20%20%20%20%20%20this.client_state_buffer[buffer_slot].rotation%20=%20rigidbody.rotation;%0a%0a%20%20%20%20%20%20this.AddForcesToPlayer%28player.GetComponent%3cRigidbody%3e%28%29,%20inputs%29;%0a%0a%20%20%20%20%20%20Physics.Simulate%28Time.fixedDeltaTime%29;%0a%0a%20%20%20%20%20%20&#43;&#43;this.tick_number;%0a%20%20%20%7d%0a%0a%20%20%20while%20%28this.HasAvailableStateMessage%28%29%29%0a%20%20%20%7b%0a%20%20%20%20%20%20StateMessage%20state_msg%20=%20this.GetStateMessage%28%29;%0a%0a%20%20%20%20%20%20uint%20buffer_slot%20=%20state_msg.tick_number%20%25%20c_client_buffer_size;%0a%20%20%20%20%20%20Vector3%20position_error%20=%20state_msg.position%20-%20this.client_state_buffer[buffer_slot].position;%0a%0a%20%20%20%20%20%20if%20%28position_error.sqrMagnitude%20%3e%200.0000001f%29%0a%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20//%20rewind%20&amp;%20replay%0a%20%20%20%20%20%20%20%20%20Rigidbody%20player_rigidbody%20=%20player.GetComponent%3cRigidbody%3e%28%29;%0a%20%20%20%20%20%20%20%20%20player_rigidbody.position%20=%20state_msg.position;%0a%20%20%20%20%20%20%20%20%20player_rigidbody.rotation%20=%20state_msg.rotation;%0a%20%20%20%20%20%20%20%20%20player_rigidbody.velocity%20=%20state_msg.velocity;%0a%20%20%20%20%20%20%20%20%20player_rigidbody.angularVelocity%20=%20state_msg.angular_velocity;%0a%0a%20%20%20%20%20%20%20%20%20uint%20rewind_tick_number%20=%20state_msg.tick_number;%0a%20%20%20%20%20%20%20%20%20while%20%28rewind_tick_number%20%3c%20this.tick_number%29%0a%20%20%20%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20%20%20%20buffer_slot%20=%20rewind_tick_number%20%25%20c_client_buffer_size;%0a%20%20%20%20%20%20%20%20%20%20%20%20this.client_input_buffer[buffer_slot]%20=%20inputs;%0a%20%20%20%20%20%20%20%20%20%20%20%20this.client_state_buffer[buffer_slot].position%20=%20player_rigidbody.position;%0a%20%20%20%20%20%20%20%20%20%20%20%20this.client_state_buffer[buffer_slot].rotation%20=%20player_rigidbody.rotation;%0a%0a%20%20%20%20%20%20%20%20%20%20%20%20this.AddForcesToPlayer%28player_rigidbody,%20inputs%29;%0a%0a%20%20%20%20%20%20%20%20%20%20%20%20Physics.Simulate%28Time.fixedDeltaTime%29;%0a%0a%20%20%20%20%20%20%20%20%20%20%20%20&#43;&#43;rewind_tick_number;%0a%20%20%20%20%20%20%20%20%20%7d%0a%20%20%20%20%20%20%7d%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="c1">// client</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">ClientState</span><span class="p">[]</span> <span class="n">client_state_buffer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ClientState</span><span class="p">[</span><span class="m">1024</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">Inputs</span><span class="p">[]</span> <span class="n">client_input_buffer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Inputs</span><span class="p">[</span><span class="m">1024</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="k">void</span> <span class="n">Update</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">+=</span> <span class="n">Time</span><span class="p">.</span><span class="n">deltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">&gt;=</span> <span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">timer</span> <span class="p">-=</span> <span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Inputs</span> <span class="n">inputs</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">SampleInputs</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">InputMessage</span> <span class="n">input_msg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span> <span class="p">=</span> <span class="n">inputs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">input_msg</span><span class="p">.</span><span class="n">tick_number</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">SendToServer</span><span class="p">(</span><span class="n">input_msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kt">uint</span> <span class="n">buffer_slot</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">tick_number</span> <span class="p">%</span> <span class="m">1024</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_input_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">]</span> <span class="p">=</span> <span class="n">inputs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">position</span> <span class="p">=</span> <span class="n">rigidbody</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">rigidbody</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;(),</span> <span class="n">inputs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">++</span><span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">HasAvailableStateMessage</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">StateMessage</span> <span class="n">state_msg</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetStateMessage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kt">uint</span> <span class="n">buffer_slot</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">tick_number</span> <span class="p">%</span> <span class="n">c_client_buffer_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Vector3</span> <span class="n">position_error</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">position</span> <span class="p">-</span> <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="n">position_error</span><span class="p">.</span><span class="n">sqrMagnitude</span> <span class="p">&gt;</span> <span class="m">0.0000001f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="c1">// rewind &amp; replay</span>
+</span></span><span class="line"><span class="cl">         <span class="n">Rigidbody</span> <span class="n">player_rigidbody</span> <span class="p">=</span> <span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">         <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">velocity</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">velocity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">angularVelocity</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">angular_velocity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="kt">uint</span> <span class="n">rewind_tick_number</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="k">while</span> <span class="p">(</span><span class="n">rewind_tick_number</span> <span class="p">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">buffer_slot</span> <span class="p">=</span> <span class="n">rewind_tick_number</span> <span class="p">%</span> <span class="n">c_client_buffer_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="p">.</span><span class="n">client_input_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">]</span> <span class="p">=</span> <span class="n">inputs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">position</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">player_rigidbody</span><span class="p">,</span> <span class="n">inputs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="p">++</span><span class="n">rewind_tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The buffered inputs and state are stored in a really simple circular buffer, just using the tick id as the index. I&rsquo;ve chosen a physics tick rate of 64hz, so with a buffer of 1024 elements that gives us 16 seconds of space, considerably more than we&rsquo;d ever really need.</p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/_ZBOSycfANA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>Corrections enabled!</sub></p>
+<h3 id="sending-redundant-inputs">Sending Redundant Inputs</h3>
+<p>Input messages are typically very small - buttons held can be combined into a bitfield which takes up a few bytes depending on the game. We also have a tick number in ours, this is 4 bytes, but we could easily compress this by using a wrapping 8 bit value instead (0-255 is perhaps too small a range, we could increase this to 9 or 10 bits to be safe). In any case, the small relative size of these messages means we can afford to send many inputs in each message (in case any of those previous inputs have been dropped). How far back to go? Well, if the client knows the tick number of the last state message it got from the server, there&rsquo;s no point going back further than that tick. You could also put a limit on the number of redundant inputs that get sent by the client, I haven&rsquo;t done that for this demo, but it&rsquo;s probably a good idea for actual shipping code.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="while%20%28this.HasAvailableStateMessage%28%29%29%0a%7b%0a%20%20%20StateMessage%20state_msg%20=%20this.GetStateMessage%28%29;%0a%0a%20%20%20this.client_last_received_state_tick%20=%20state_msg.tick_number;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">HasAvailableStateMessage</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">StateMessage</span> <span class="n">state_msg</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetStateMessage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">this</span><span class="p">.</span><span class="n">client_last_received_state_tick</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>This is a simple modification, the client just makes a note of the tick number of the latest state message it receives.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="Inputs%20inputs%20=%20this.SampleInputs%28%29;%0a%0aInputMessage%20input_msg;%0ainput_msg.start_tick_number%20=%20this.client_last_received_state_tick;%0ainput_msg.inputs%20=%20new%20List%3cInputs%3e%28%29;%0afor%20%28uint%20tick%20=%20this.client_last_received_state_tick;%20tick%20%3c=%20this.tick_number;%20&#43;&#43;tick%29%0a%7b%0a%20%20%20input_msg.inputs.Add%28this.client_input_buffer[tick%20%25%201024]%29;%0a%7d%0athis.SendToServer%28input_msg%29;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="n">Inputs</span> <span class="n">inputs</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">SampleInputs</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">InputMessage</span> <span class="n">input_msg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">input_msg</span><span class="p">.</span><span class="n">start_tick_number</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">client_last_received_state_tick</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Inputs</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kt">uint</span> <span class="n">tick</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">client_last_received_state_tick</span><span class="p">;</span> <span class="n">tick</span> <span class="p">&lt;=</span> <span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span> <span class="p">++</span><span class="n">tick</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">client_input_buffer</span><span class="p">[</span><span class="n">tick</span> <span class="p">%</span> <span class="m">1024</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">this</span><span class="p">.</span><span class="n">SendToServer</span><span class="p">(</span><span class="n">input_msg</span><span class="p">);</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>The input message sent by the client now contains a list of inputs, rather than just one. The tick number part of that message now takes on a new meaning, as the tick number of the first input in that list.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="while%20%28this.HasAvailableInputMessages%28%29%29%0a%7b%0a%20%20%20InputMessage%20input_msg%20=%20this.GetInputMessage%28%29;%0a%0a%20%20%20//%20message%20contains%20an%20array%20of%20inputs,%20calculate%20what%20tick%20the%20final%20one%20is%0a%20%20%20uint%20max_tick%20=%20input_msg.start_tick_number%20&#43;%20%28uint%29input_msg.inputs.Count%20-%201;%0a%0a%20%20%20//%20if%20that%20tick%20is%20greater%20than%20or%20equal%20to%20the%20current%20tick%20we%27re%20on,%20then%20it%0a%20%20%20//%20has%20inputs%20which%20are%20new%0a%20%20%20if%20%28max_tick%20%3e=%20server_tick_number%29%0a%20%20%20%7b%0a%20%20%20%20%20%20//%20there%20may%20be%20some%20inputs%20in%20the%20array%20that%20we%27ve%20already%20had,%0a%20%20%20%20%20%20//%20so%20figure%20out%20where%20to%20start%0a%20%20%20%20%20%20uint%20start_i%20=%20server_tick_number%20%3e%20input_msg.start_tick_number%20?%20%28server_tick_number%20-%20input_msg.start_tick_number%29%20:%200;%0a%0a%20%20%20%20%20%20//%20run%20through%20all%20relevant%20inputs,%20and%20step%20player%20forward%0a%20%20%20%20%20%20Rigidbody%20rigidbody%20=%20player.GetComponent%3cRigidbody%3e%28%29;%0a%20%20%20%20%20%20for%20%28int%20i%20=%20%28int%29start_i;%20i%20%3c%20input_msg.inputs.Count;%20&#43;&#43;i%29%0a%20%20%20%20%20%20%7b%0a%20%20%20%20%20%20%20%20%20this.AddForcesToPlayer%28rigidbody,%20input_msg.inputs[i]%29;%0a%0a%20%20%20%20%20%20%20%20%20Physics.Simulate%28Time.fixedDeltaTime%29;%0a%20%20%20%20%20%20%7d%0a%20%20%20%20%20%20%0a%20%20%20%20%20%20server_tick_number%20=%20max_tick%20&#43;%201;%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">HasAvailableInputMessages</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">InputMessage</span> <span class="n">input_msg</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetInputMessage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// message contains an array of inputs, calculate what tick the final one is</span>
+</span></span><span class="line"><span class="cl">   <span class="kt">uint</span> <span class="n">max_tick</span> <span class="p">=</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">start_tick_number</span> <span class="p">+</span> <span class="p">(</span><span class="kt">uint</span><span class="p">)</span><span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="m">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// if that tick is greater than or equal to the current tick we&#39;re on, then it</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// has inputs which are new</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">max_tick</span> <span class="p">&gt;=</span> <span class="n">server_tick_number</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// there may be some inputs in the array that we&#39;ve already had,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// so figure out where to start</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">uint</span> <span class="n">start_i</span> <span class="p">=</span> <span class="n">server_tick_number</span> <span class="p">&gt;</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">start_tick_number</span> <span class="p">?</span> <span class="p">(</span><span class="n">server_tick_number</span> <span class="p">-</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">start_tick_number</span><span class="p">)</span> <span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// run through all relevant inputs, and step player forward</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Rigidbody</span> <span class="n">rigidbody</span> <span class="p">=</span> <span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">start_i</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="p">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">rigidbody</span><span class="p">,</span> <span class="n">input_msg</span><span class="p">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="n">server_tick_number</span> <span class="p">=</span> <span class="n">max_tick</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>When the server receives an input message, it knows the tick number of the first input, and the number of inputs in the message. Therefore, it can calculate the tick of the final input in the message. If this final tick is greater than or equal to the server tick number, then it knows this message contains at least one input that it hasn&rsquo;t seen before. If that&rsquo;s the case, it simulates all the new inputs.</p>
+<p>You might notice that if <em>we</em> limited the number of redundant inputs in the input message, it would be possible that if enough input messages were dropped, we&rsquo;d end up with a simulation gap between the server and client. Meaning, the server might simulate tick 100, send out the state message for the beginning of tick 101, and then receive an input message which starts at 105. In the above code the server will jump to 105, it won&rsquo;t attempt to simulate the ticks in-between using the last known inputs. Whether or not you choose to do this is really up to you, and depends on the game you&rsquo;re making. Personally, I&rsquo;d rather not have the server guess, and send a player potentially coasting across the map because of bad network conditions. I think it&rsquo;s actually better to root the player to the spot for that period of time until their connection recovers.</p>
+<p>In the original &ldquo;Zen of Networked Physics&rdquo; demo there was also a feature where the client would send &ldquo;important moves&rdquo;, which means it would send redundant inputs only if they were different from the input which came before. This could also be referred to as delta-compression of the inputs, and would result in even smaller input messages. I haven&rsquo;t done it here though, as this demo doesn&rsquo;t include any bandwidth optimisation.</p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/XWUsdlNUG5Y" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>Before sending redundant inputs:<br>
+With 25% packet loss<br>
+The cube&rsquo;s movement is slow and jerky, it keeps rubber-banding backwards.</sub></p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/ETFdFAB3s9c" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>After sending redundant inputs:<br>
+With 25% packet loss<br>
+There are still jerky corrections, but the cube moves at the appropriate speed.</sub></p>
+<h3 id="varying-snapshot-rate">Varying Snapshot Rate</h3>
+<p>The rate at which the server sends snapshots to the client is variable in this demo. With a lower rate, it will take longer on average for the client to receive a correction from the server. So when the client mispredicts, it will diverge more before getting a state message, resulting in a more noticeable correction. With a higher snapshot rate, the loss of a packet is a lot less significant, as the client doens&rsquo;t have to wait as long before the next snapshot turns up.</p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/ukyFYNfvyDQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>64hz snapshot rate</sub></p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/yQdriQIUnkU" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>16hz snapshot rate</sub></p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/RJPah4ucpF0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>2hz snapshot rate</sub></p>
+<p>It&rsquo;s clear that a higher snapshot rate is better, so I&rsquo;d say, send them as fast as you can. It just depends on how much traffic that adds up to, the cost of that traffic if you&rsquo;re running dedicated servers, the computational cost for the servers, and so on.</p>
+<h3 id="correction-smoothing">Correction Smoothing</h3>
+<p>We get mispredictions and jarring corrections happening - more than we&rsquo;d like. Without proper access to the Unity/PhysX integration, my abilities to debug the mispredictions are pretty nonexistent. I&rsquo;ve said this before but I&rsquo;ll say it again - if you can spot something I&rsquo;m doing wrong with the physics, please let me know.</p>
+<p>I&rsquo;ve worked around this problem by papering over the cracks with good old fashioned smoothing! When a correction occurs, the client just smoothes the player position and rotation towards the correct state over multiple frames. The actual physics cube is corrected immediately (and is invisible), but there is a second cube for display purposes only, which allows for the smoothing.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="Vector3%20position_error%20=%20state_msg.position%20-%20predicted_state.position;%0afloat%20rotation_error%20=%201.f%20-%20Quaternion.Dot%28state_msg.rotation,%20predicted_state.rotation%29;%0a%0aif%20%28position_error.sqrMagnitude%20%3e%200.0000001f%20%7c%7c%0a%20%20%20rotation_error%20%3e%200.00001f%29%0a%7b%0a%20%20%20Rigidbody%20player_rigidbody%20=%20player.GetComponent%3cRigidbody%3e%28%29;%0a%0a%20%20%20//%20capture%20the%20current%20predicted%20pos%20for%20smoothing%0a%20%20%20Vector3%20prev_pos%20=%20player_rigidbody.position%20&#43;%20this.client_pos_error;%0a%20%20%20Quaternion%20prev_rot%20=%20player_rigidbody.rotation%20*%20this.client_rot_error;%0a%0a%20%20%20//%20rewind%20&amp;%20replay%0a%20%20%20player_rigidbody.position%20=%20state_msg.position;%0a%20%20%20player_rigidbody.rotation%20=%20state_msg.rotation;%0a%20%20%20player_rigidbody.velocity%20=%20state_msg.velocity;%0a%20%20%20player_rigidbody.angularVelocity%20=%20state_msg.angular_velocity;%0a%0a%20%20%20uint%20rewind_tick_number%20=%20state_msg.tick_number;%0a%20%20%20while%20%28rewind_tick_number%20%3c%20this.tick_number%29%0a%20%20%20%7b%0a%20%20%20%20%20%20buffer_slot%20=%20rewind_tick_number%20%25%20c_client_buffer_size;%0a%20%20%20%20%20%20this.client_input_buffer[buffer_slot]%20=%20inputs;%0a%20%20%20%20%20%20this.client_state_buffer[buffer_slot].position%20=%20player_rigidbody.position;%0a%20%20%20%20%20%20this.client_state_buffer[buffer_slot].rotation%20=%20player_rigidbody.rotation;%0a%0a%20%20%20%20%20%20this.AddForcesToPlayer%28player_rigidbody,%20inputs%29;%0a%0a%20%20%20%20%20%20Physics.Simulate%28Time.fixedDeltaTime%29;%0a%0a%20%20%20%20%20%20&#43;&#43;rewind_tick_number;%0a%20%20%20%7d%0a%0a%20%20%20//%20if%20more%20than%202ms%20apart,%20just%20snap%0a%20%20%20if%20%28%28prev_pos%20-%20player_rigidbody.position%29.sqrMagnitude%20%3e=%204.0f%29%0a%20%20%20%7b%0a%20%20%20%20%20%20this.client_pos_error%20=%20Vector3.zero;%0a%20%20%20%20%20%20this.client_rot_error%20=%20Quaternion.identity;%0a%20%20%20%7d%0a%20%20%20else%0a%20%20%20%7b%0a%20%20%20%20%20%20this.client_pos_error%20=%20prev_pos%20-%20player_rigidbody.position;%0a%20%20%20%20%20%20this.client_rot_error%20=%20Quaternion.Inverse%28player_rigidbody.rotation%29%20*%20prev_rot;%0a%20%20%20%7d%0a%7d">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="n">Vector3</span> <span class="n">position_error</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">position</span> <span class="p">-</span> <span class="n">predicted_state</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">float</span> <span class="n">rotation_error</span> <span class="p">=</span> <span class="m">1.f</span> <span class="p">-</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">state_msg</span><span class="p">.</span><span class="n">rotation</span><span class="p">,</span> <span class="n">predicted_state</span><span class="p">.</span><span class="n">rotation</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">position_error</span><span class="p">.</span><span class="n">sqrMagnitude</span> <span class="p">&gt;</span> <span class="m">0.0000001f</span> <span class="p">||</span>
+</span></span><span class="line"><span class="cl">   <span class="n">rotation_error</span> <span class="p">&gt;</span> <span class="m">0.00001f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Rigidbody</span> <span class="n">player_rigidbody</span> <span class="p">=</span> <span class="n">player</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Rigidbody</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// capture the current predicted pos for smoothing</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Vector3</span> <span class="n">prev_pos</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span> <span class="p">+</span> <span class="k">this</span><span class="p">.</span><span class="n">client_pos_error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Quaternion</span> <span class="n">prev_rot</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">client_rot_error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// rewind &amp; replay</span>
+</span></span><span class="line"><span class="cl">   <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">velocity</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">velocity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">angularVelocity</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">angular_velocity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="kt">uint</span> <span class="n">rewind_tick_number</span> <span class="p">=</span> <span class="n">state_msg</span><span class="p">.</span><span class="n">tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span><span class="n">rewind_tick_number</span> <span class="p">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="n">tick_number</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">buffer_slot</span> <span class="p">=</span> <span class="n">rewind_tick_number</span> <span class="p">%</span> <span class="n">c_client_buffer_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_input_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">]</span> <span class="p">=</span> <span class="n">inputs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">position</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_state_buffer</span><span class="p">[</span><span class="n">buffer_slot</span><span class="p">].</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">AddForcesToPlayer</span><span class="p">(</span><span class="n">player_rigidbody</span><span class="p">,</span> <span class="n">inputs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">Physics</span><span class="p">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">fixedDeltaTime</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">++</span><span class="n">rewind_tick_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="c1">// if more than 2ms apart, just snap</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">((</span><span class="n">prev_pos</span> <span class="p">-</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span><span class="p">).</span><span class="n">sqrMagnitude</span> <span class="p">&gt;=</span> <span class="m">4.0f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_pos_error</span> <span class="p">=</span> <span class="n">Vector3</span><span class="p">.</span><span class="n">zero</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_rot_error</span> <span class="p">=</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">identity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="k">else</span>
+</span></span><span class="line"><span class="cl">   <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_pos_error</span> <span class="p">=</span> <span class="n">prev_pos</span> <span class="p">-</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="n">client_rot_error</span> <span class="p">=</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span><span class="p">)</span> <span class="p">*</span> <span class="n">prev_rot</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>When a misprediction occurs, the client keeps track of the difference in position/rotation after the correction. If the total distance of position correction is greater than 2 metres then it just snaps - that&rsquo;ll look pretty bad being smoothed anyway, best just get back on track ASAP.</p>
+
+
+
+
+
+
+
+<div class="codeblock">
+    
+        <div class="copy-button-box">
+            <button class="copy-button" state="copy" data="this.client_pos_error%20*=%200.9f;%0athis.client_rot_error%20=%20Quaternion.Slerp%28this.client_rot_error,%20Quaternion.identity,%200.1f%29;%0a%0athis.smoothed_client_player.transform.position%20=%20player_rigidbody.position%20&#43;%20this.client_pos_error;%0athis.smoothed_client_player.transform.rotation%20=%20player_rigidbody.rotation%20*%20this.client_rot_error;">
+                <i class="bi bi-copy"></i>
+            </button>
+        </div>
+    
+
+    
+        <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c#" data-lang="c#"><span class="line"><span class="cl"><span class="k">this</span><span class="p">.</span><span class="n">client_pos_error</span> <span class="p">*=</span> <span class="m">0.9f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">this</span><span class="p">.</span><span class="n">client_rot_error</span> <span class="p">=</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">Slerp</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">client_rot_error</span><span class="p">,</span> <span class="n">Quaternion</span><span class="p">.</span><span class="n">identity</span><span class="p">,</span> <span class="m">0.1f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">this</span><span class="p">.</span><span class="n">smoothed_client_player</span><span class="p">.</span><span class="n">transform</span><span class="p">.</span><span class="n">position</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">position</span> <span class="p">+</span> <span class="k">this</span><span class="p">.</span><span class="n">client_pos_error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">this</span><span class="p">.</span><span class="n">smoothed_client_player</span><span class="p">.</span><span class="n">transform</span><span class="p">.</span><span class="n">rotation</span> <span class="p">=</span> <span class="n">player_rigidbody</span><span class="p">.</span><span class="n">rotation</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">client_rot_error</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>
+    
+</div>
+<p>Each frame the client lerps/slerps towards the correct position/rotation by 10%, the usual exponential moving average approach. This isn&rsquo;t frame rate independent, but it will do for the purposes of this demo.</p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/AQ3bMh0OQig" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>250ms latency<br>
+10% packet loss<br>
+Without smoothing, corrections are very noticeable</sub></p>
+<p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/2jhg8OJdqXY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<sub>250ms latency<br>
+10% packet loss<br>
+With smoothing, corrections are much harder to spot</sub></p>
+<p>The end result works pretty well - I&rsquo;d like to try making a version of this that actually sends packets rather than all the fakery, but it&rsquo;s at least a proof of concept for doing client-side prediction, of proper physics objects, with Unity, without having to resort to physics plugins and the like.</p>
+
+            
+        </div>
+    </article>
+
+        </main>
+
+        <footer class="footer">
+    <div class="footer-left">
+        <ul class="social">
+            
+
+            
+                <li>Joe Best-Rotheray</li>
+            
+
+            
+                
+                    <li>
+                        
+                            <a href="mailto:joe@codersblock.org" target="_blank">
+                                <i class="bi-envelope"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="spectre1989" target="_blank">
+                                <i class="bi-github"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="joebestrotheray" target="_blank">
+                                <i class="bi-linkedin"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+                
+                    <li>
+                        
+                            <a href="codersblock" target="_blank">
+                                <i class="bi-twitter"></i>
+                            </a>
+                        
+
+                    </li>
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+    <div class="footer-right">
+        <ul class="control status clearfix">
+            
+                <li>
+                    
+                        Word Count:
+                        3106
+                    
+                </li>
+            
+
+            
+            
+
+            
+                <li>en</li>
+            
+
+            
+                <li>
+                    <a href="https://gohugo.io" class="btn" target="_blank"
+                        >Hugo: 0.121.2</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    <a
+                        href="https://github.com/JingWangTW/dark-theme-editor"
+                        class="btn"
+                        target="_blank"
+                        >Theme: dark-theme-editor</a
+                    >
+                </li>
+            
+
+            
+                <li>
+                    
+                        Last modified: &nbsp;
+                        <time>
+                            Apr 14 2018 00:00:00
+                        </time>
+                    
+                </li>
+            
+
+            
+                <li title="">
+                    
+                </li>
+            
+        </ul>
+    </div>
+</footer>
+
+    </body>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    <script
+        type="text/javascript"
+        src="/js/index_d751713.min.5eeb120f16ea146352725c420364f87befead45f678142b8f0ffbef024646931fbc06bff07a7bd6cb57fa2f8cd8a21ba6a4ee5a278ec32303a378bc1cd17f246.js"
+        integrity="sha512-XusSDxbqFGNSclxCA2T4e&#43;/q1F9ngUK48P&#43;&#43;8CRkaTH7wGv/B6e9bLV/ovjNiiG6ak7lonjsMjA6N4vBzRfyRg=="></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+
+
+
+</html>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Coder&#39;s Block</title>
+    <link>https://codersblock.org/posts/</link>
+    <description>Recent content in Posts on Coder&#39;s Block</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 14 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://codersblock.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Client-Side Prediction With Physics In Unity</title>
+      <link>https://codersblock.org/posts/unity-client-side-prediction/</link>
+      <pubDate>Sat, 14 Apr 2018 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/posts/unity-client-side-prediction/</guid>
+      <description>TL;DR I made a demo showing how to do client-side prediction with physics-based player movement in Unity - GitHub.&#xA;UPDATE: Aran Koning submitted a pull request which improves upon the code in this article using even newer and shinier Unity features. By putting the client and the server cubes in different physics scenes, there’s no need to selectively disable one cube or the other, which causes issues with determinism.&#xA;Introduction Back in early 2012 I wrote a blog post about kind-of-but-not-really implementing client-side prediction of physics-based player movement in Unity.</description>
+    </item>
+    <item>
+      <title>Ditching the Mutex</title>
+      <link>https://codersblock.org/posts/ditching-the-mutex/</link>
+      <pubDate>Thu, 02 Jun 2016 00:00:00 +0000</pubDate>
+      <guid>https://codersblock.org/posts/ditching-the-mutex/</guid>
+      <description>TL;DR - I wrote a multiple-producer multiple-consumer queue without any mutexes, it&amp;rsquo;s pretty fast, GitHub.&#xA;About a year ago, a colleague was explaining why Erlang is so scalable, and it essentially comes down to a lack of shared memory. When you have two or more threads which share a section of memory, then whenever a thread is writing to that memory, no other threads can perform a read or write at the same time.</description>
+    </item>
+  </channel>
+</rss>
